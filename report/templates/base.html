@@ -94,7 +94,11 @@
         <div class="account-wrap">
           <div class="account-item account-item--style2 clearfix js-item-menu">
             <div class="image">
-              <img src="{% static 'report/icon/avatar-01.jpg' %}" alt="John Doe"/>
+              {% if user.photo %}
+                <img src="{{ user.photo }}" alt="{{ user.name }}"/>
+              {% else %}
+                <img src="{% static 'report/icon/avatar-06.jpg' %}" alt="John Doe"/>
+              {% endif %}
             </div>
             <div class="content">
               <a class="js-acc-btn" href="#">john doe</a>
@@ -103,14 +107,18 @@
               <div class="info clearfix">
                 <div class="image">
                   <a href="#">
-                    <img src="{% static 'report/icon/avatar-01.jpg' %}" alt="John Doe"/>
+                    {% if user.photo %}
+                      <img src="{{ user.photo }}" alt="{{ user.name }}"/>
+                    {% else %}
+                      <img src="{% static 'report/icon/avatar-06.jpg' %}" alt="John Doe"/>
+                    {% endif %}
                   </a>
                 </div>
                 <div class="content">
                   <h5 class="name">
-                    <a href="#">john doe</a>
+                    <a href="#">{{ user.name }}</a>
                   </h5>
-                  <span class="email">johndoe@example.com</span>
+                  <span class="email">{{ user.email }}</span>
                 </div>
               </div>
               <div class="account-dropdown__body">
@@ -120,9 +128,12 @@
                 </div>
               </div>
               <div class="account-dropdown__footer">
-                <a href="#">
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                   <i class="zmdi zmdi-power"></i>Logout</a>
               </div>
+              <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                {% csrf_token %}
+              </form>
             </div>
           </div>
         </div>
@@ -156,35 +167,8 @@
   {% endblock %}
 
   {% block statistic %}
-    <section class="welcome p-t-10">
-      <div class="container">
-        <div class="row mt-4">
-          <div class="col-md-12">
-            <div class="table-responsive table-responsive-data2">
-              <table class="table table-data2 text-center">
-                <thead>
-                <tr>
-                  <th>Торговый представитель</th>
-                  <th>На учете холодильников</th>
-                  <th>Отчетов отправил</th>
-                  <th>Отчетов одобрено</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                  <td>{{ user.name }}</td>
-                  <td>{{ statistic.refrigerators_count }}</td>
-                  <td>{{ statistic.total_reports }}</td>
-                  <td>{{ statistic.approved_reports }}</td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
   {% endblock %}
+
   {% block context %}
   {% endblock %}
 

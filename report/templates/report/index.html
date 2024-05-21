@@ -1,15 +1,49 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block statistic %}
+  <section class="welcome p-t-10">
+    <div class="container">
+      <div class="row mt-4">
+        <div class="col-md-12">
+          <div class="table-responsive table-responsive-data2">
+            <table class="table table-data2 text-center">
+              <thead>
+              <tr>
+                <th>Торговый представитель</th>
+                <th>На учете холодильников</th>
+                <th>Отчетов отправил</th>
+                <th>Отчетов одобрено</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ statistic.refrigerators_count }}</td>
+                <td>{{ statistic.total_reports }}</td>
+                <td>{{ statistic.approved_reports }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+
 {% block context %}
   <section class="p-t-20">
     <div class="container">
       <div class="row">
         <div class="col-md-12">
           <div class="table-data__tool-right d-flex justify-content-between mb-3">
-            <a href="{% url 'reports' %}"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
-              <i class="zmdi zmdi-receipt"></i>Мои отчеты
-            </button></a>
+            <a href="{% url 'reports' %}">
+              <button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                <i class="zmdi zmdi-receipt"></i>Мои отчеты
+              </button>
+            </a>
             <button class="au-btn au-btn-icon au-btn--green au-btn--small">
               <i class="zmdi zmdi-plus"></i>Добавить отчет
             </button>
