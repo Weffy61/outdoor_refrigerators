@@ -1,0 +1,227 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="au theme template">
+  <meta name="author" content="Hau Nguyen">
+  <meta name="keywords" content="au theme template">
+  <title>Dashboard 3</title>
+  <link href="{% static 'report/css/font-face.css' %}" rel="stylesheet" media="all">
+  <link href="{% static  'report/css/font-awesome-4.7/css/font-awesome.min.css' %}" rel="stylesheet" media="all">
+  <link href="{% static 'report/css/font-awesome-5/css/fontawesome-all.min.css' %}" rel="stylesheet" media="all">
+  <link href="{% static 'report/css/mdi-font/css/material-design-iconic-font.min.css' %}" rel="stylesheet"
+        media="all">
+  <link href="{% static 'report/css/bootstrap.min.css' %}" rel="stylesheet" media="all">
+  <link href="{% static 'report/css/animsition/animsition.min.css' %}" rel="stylesheet" media="all">
+  <link href="{% static 'report/css/bootstrap-progressbar-3.3.4.min.css' %}" rel="stylesheet" media="all">
+  <link href="{% static 'report/css/animate.css' %}" rel="stylesheet" media="all">
+  <link href="{% static 'report/css/css-hamburgers/hamburgers.min.css' %}" rel="stylesheet" media="all">
+  <link href="{% static 'report/css/slick.css' %}" rel="stylesheet" media="all">
+  <link href="{% static 'report/css/select2.min.css' %}" rel="stylesheet" media="all">
+  <link href="{% static 'report/css/perfect-scrollbar.css' %}" rel="stylesheet" media="all">
+  <link href="{% static 'report/css/theme.css' %}" rel="stylesheet" media="all">
+</head>
+<body class="animsition">
+<div class="page-wrapper">
+  {% block header %}
+    <!-- HEADER DESKTOP-->
+    <header class="header-desktop3 d-none d-lg-block">
+      <div class="section__content section__content--p35">
+        <div class="header3-wrap">
+          <div class="header__logo">
+            <a href="#">
+              <img src="{% static 'report/icon/logo-white.png' %}" alt="CoolAdmin"/>
+            </a>
+          </div>
+          <div class="header__tool">
+            <div class="account-wrap">
+              <div class="account-item account-item--style2 clearfix js-item-menu">
+                <div class="image">
+                  {% if user.photo %}
+                    <img src="{{ user.photo }}" alt="{{ user.name }}"/>
+                  {% else %}
+                    <img src="{% static 'report/icon/avatar-06.jpg' %}" alt="John Doe"/>
+                  {% endif %}
+                </div>
+                <div class="content">
+                  <a class="js-acc-btn" href="#">{{ user.name }}</a>
+                </div>
+                <div class="account-dropdown js-dropdown">
+                  <div class="info clearfix">
+                    <div class="image">
+                      <a href="#">
+                        {% if user.photo %}
+                          <img src="{{ user.photo }}" alt="{{ user.name }}"/>
+                        {% else %}
+                          <img src="{% static 'report/icon/avatar-06.jpg' %}" alt="{{ user.name }}"/>
+                        {% endif %}
+                      </a>
+                    </div>
+                    <div class="content">
+                      <h5 class="name">
+                        <a href="#">{{ user.name }}</a>
+                      </h5>
+                      <span class="email">{{ user.email }}</span>
+                    </div>
+                  </div>
+                  <div class="account-dropdown__body">
+                    <div class="account-dropdown__item">
+                      <a href="#">
+                        <i class="zmdi zmdi-account"></i>Account</a>
+                    </div>
+                  </div>
+                  <div class="account-dropdown__footer">
+                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                      <i class="zmdi zmdi-power"></i>Logout</a>
+                  </div>
+                  <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- END HEADER DESKTOP-->
+
+    <!-- HEADER MOBILE-->
+    <div class="sub-header-mobile-2 d-block d-lg-none">
+      <div class="header__tool">
+        <div class="account-wrap">
+          <div class="account-item account-item--style2 clearfix js-item-menu">
+            <div class="image">
+              <img src="{% static 'report/icon/avatar-01.jpg' %}" alt="John Doe"/>
+            </div>
+            <div class="content">
+              <a class="js-acc-btn" href="#">john doe</a>
+            </div>
+            <div class="account-dropdown js-dropdown">
+              <div class="info clearfix">
+                <div class="image">
+                  <a href="#">
+                    <img src="{% static 'report/icon/avatar-01.jpg' %}" alt="John Doe"/>
+                  </a>
+                </div>
+                <div class="content">
+                  <h5 class="name">
+                    <a href="#">john doe</a>
+                  </h5>
+                  <span class="email">johndoe@example.com</span>
+                </div>
+              </div>
+              <div class="account-dropdown__body">
+                <div class="account-dropdown__item">
+                  <a href="#">
+                    <i class="zmdi zmdi-account"></i>Account</a>
+                </div>
+              </div>
+              <div class="account-dropdown__footer">
+                <a href="#">
+                  <i class="zmdi zmdi-power"></i>Logout</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END HEADER MOBILE -->
+
+    <div class="page-content--bgf7">
+    <section class="au-breadcrumb2">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="au-breadcrumb-content">
+              <div class="au-breadcrumb-left">
+                <span class="au-breadcrumb-span">Вы здесь:</span>
+                <ul class="list-unstyled list-inline au-breadcrumb__list">
+                  <li class="list-inline-item active">
+                    <a href="{% url 'index' %}">Главная страница</a>
+                  </li>
+                  {% block location %}
+                  {% endblock %}
+                </ul>
+              </div>
+              {% block search %}
+              {% endblock %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endblock %}
+
+  {% block statistic %}
+    <section class="welcome p-t-10">
+      <div class="container">
+        <div class="row mt-4">
+          <div class="col-md-12">
+            <div class="table-responsive table-responsive-data2">
+              <table class="table table-data2 text-center">
+                <thead>
+                <tr>
+                  <th>Торговый представитель</th>
+                  <th>На учете холодильников</th>
+                  <th>Отчетов отправил</th>
+                  <th>Отчетов одобрено</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>{{ user.name }}</td>
+                  <td>{{ statistic.refrigerators_count }}</td>
+                  <td>{{ statistic.total_reports }}</td>
+                  <td>{{ statistic.approved_reports }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endblock %}
+  {% block context %}
+  {% endblock %}
+
+  {% block footer %}
+    <section class="p-t-60 p-b-20">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="copyright">
+              <p>Copyright © 2018 Colorlib. All rights reserved. Template by <a href="https://colorlib.com">Colorlib</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endblock %}
+
+  </div>
+  {% block js %}
+    <script src="{% static 'report/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'report/js/bootstrap-4.1/popper.min.js' %}"></script>
+    <script src="{% static 'report/js/bootstrap-4.1/bootstrap.min.js' %}"></script>
+    <script src="{% static 'report/js/slick/slick.min.js' %}">
+    </script>
+    <script src="{% static 'report/js/wow/wow.min.js' %}"></script>
+    <script src="{% static 'report/js/animsition.min.js' %}"></script>
+    <script src="{% static 'report/js/bootstrap-progressbar/bootstrap-progressbar.min.js' %}">
+    </script>
+    <script src="{% static 'report/js/counter-up/jquery.waypoints.min.js' %}"></script>
+    <script src="{% static 'report/js/counter-up/jquery.counterup.min.js' %}"></script>
+    <script src="{% static 'report/js/circle-progress/circle-progress.min.js' %}"></script>
+    <script src="{% static 'report/js/perfect-scrollbar/perfect-scrollbar.js' %}"></script>
+    <script src="{% static 'report/js/chartjs/Chart.bundle.min.js' %}"></script>
+    <script src="{% static 'report/js/select2/select2.min.js' %}"></script>
+    <script src="{% static 'report/js/main.js' %}"></script>
+  {% endblock %}
+</div>
+</body>
+</html>
