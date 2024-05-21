@@ -15,8 +15,13 @@ class Refrigerator(models.Model):
     )
     serial_number = models.CharField(verbose_name='Серийный номер', max_length=200)
     model = models.CharField(verbose_name='Модель аппарата', max_length=200)
-    organization = models.TextField(verbose_name='Организация расположения оборудования', null=True, blank=True)
-    organization_address = models.TextField(verbose_name='Адрес расположения организации', null=True, blank=True)
+    organization = models.ForeignKey(
+        'Organization',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Организация расположения оборудования'
+    )
 
     class Meta:
         verbose_name = 'Холодильник'
@@ -24,6 +29,18 @@ class Refrigerator(models.Model):
 
     def __str__(self):
         return f'Холодильник {self.model} {self.serial_number}'
+
+
+class Organization(models.Model):
+    name = models.CharField(verbose_name='Название организации', max_length=200)
+    address = models.TextField(verbose_name='Адрес организации', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Организация'
+        verbose_name_plural = 'Организации'
+
+    def __str__(self):
+        return self.name
 
 
 class Report(models.Model):
@@ -54,6 +71,9 @@ class Report(models.Model):
         related_name='reports',
         verbose_name='Отчет отправил',
     )
+    comment = models.TextField(verbose_name='Комментарий от торгового представителя', blank=True, null=True)
+    comment_manager = models.TextField(verbose_name='Комментарий от менеджера', blank=True, null=True)
+    comment_admin = models.TextField(verbose_name='Комментарий от админа', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Отчет'
@@ -71,8 +91,6 @@ class Photo(models.Model):
         verbose_name='Отчет'
     )
     image = models.ImageField(upload_to='report_photos/', verbose_name='Фото отчета')
-    comment_from = models.TextField(verbose_name='Комментарий от торгового представителя', blank=True, null=True)
-    comment_to = models.TextField(verbose_name='Комментарий для торгового представителя', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Фотография'
