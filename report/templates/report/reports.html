@@ -8,9 +8,19 @@
   <li class="list-inline-item">Отчеты</li>
 {% endblock %}
 
+{#{% block search %}#}
+{#  <form class="au-form-icon--sm" action="" method="post">#}
+{#    <input class="au-input--w300 au-input--style2" type="text" placeholder="Поиск по отчетам...">#}
+{#    <button class="au-btn--submit2" type="submit">#}
+{#      <i class="zmdi zmdi-search"></i>#}
+{#    </button>#}
+{#  </form>#}
+{#{% endblock %}#}
+
 {% block search %}
-  <form class="au-form-icon--sm" action="" method="post">
-    <input class="au-input--w300 au-input--style2" type="text" placeholder="Поиск по отчетам...">
+  <form class="au-form-icon--sm" action="{% url 'reports' %}" method="get">
+    <input class="au-input--w300 au-input--style2" type="text" name="q" placeholder="Поиск по отчетам..."
+           value="{{ search_query }}">
     <button class="au-btn--submit2" type="submit">
       <i class="zmdi zmdi-search"></i>
     </button>
@@ -26,9 +36,9 @@
       <div class="row">
         <div class="col-md-12">
           <div class="table-data__tool-right d-flex justify-content-between mb-3">
-            <button class="au-btn au-btn-icon au-btn--green au-btn--small">
+            <a href="{% url 'index' %}"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
               <i class="zmdi zmdi-receipt"></i>Мои холодильники
-            </button>
+            </button></a>
           </div>
           <h3 class="title-5 m-b-35">отчеты</h3>
           <div class="table-responsive table-responsive-data2">
@@ -81,12 +91,15 @@
               <ul class="pagination">
                 {% if page.has_previous %}
                   <li class="page-item">
-                    <a class="page-link" href="?page=1" aria-label="First">
+                    <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}"
+                       aria-label="First">
                       <span aria-hidden="true">&laquo;&laquo;</span>
                     </a>
                   </li>
                   <li class="page-item">
-                    <a class="page-link" href="?page={{ page.previous_page_number }}" aria-label="Previous">
+                    <a class="page-link"
+                       href="?page={{ page.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}"
+                       aria-label="Previous">
                       <span aria-hidden="true">Назад</span>
                     </a>
                   </li>
@@ -109,18 +122,23 @@
                     </li>
                   {% elif num > page.number|add:'-3' and num < page.number|add:'3' %}
                     <li class="page-item">
-                      <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                      <a class="page-link"
+                         href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}">{{ num }}</a>
                     </li>
                   {% endif %}
                 {% endfor %}
                 {% if page.has_next %}
                   <li class="page-item">
-                    <a class="page-link" href="?page={{ page.next_page_number }}" aria-label="Next">
+                    <a class="page-link"
+                       href="?page={{ page.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}"
+                       aria-label="Next">
                       <span aria-hidden="true">Вперед</span>
                     </a>
                   </li>
                   <li class="page-item">
-                    <a class="page-link" href="?page={{ page.paginator.num_pages }}" aria-label="Last">
+                    <a class="page-link"
+                       href="?page={{ page.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}"
+                       aria-label="Last">
                       <span aria-hidden="true">&raquo;&raquo;</span>
                     </a>
                   </li>
