@@ -8,15 +8,6 @@
   <li class="list-inline-item">Отчеты</li>
 {% endblock %}
 
-{#{% block search %}#}
-{#  <form class="au-form-icon--sm" action="" method="post">#}
-{#    <input class="au-input--w300 au-input--style2" type="text" placeholder="Поиск по отчетам...">#}
-{#    <button class="au-btn--submit2" type="submit">#}
-{#      <i class="zmdi zmdi-search"></i>#}
-{#    </button>#}
-{#  </form>#}
-{#{% endblock %}#}
-
 {% block search %}
   <form class="au-form-icon--sm" action="{% url 'reports' %}" method="get">
     <input class="au-input--w300 au-input--style2" type="text" name="q" placeholder="Поиск по отчетам..."
@@ -73,7 +64,7 @@
                   {% endif %}
                   <td>
                     <div class="table-data-feature">
-                      <a href="{{ report.url }}">
+                      <a href="{% url 'report' report.id %}">
                         <button class="item" data-toggle="tooltip" data-placement="top" title="Перейти">
                           <i class="zmdi zmdi-arrow-right"></i>
                         </button>

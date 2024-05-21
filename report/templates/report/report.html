@@ -1,10 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block location %}
+  <li class="list-inline-item seprate">
+    <span>/</span>
+  </li>
+  <li class="list-inline-item active">
+    <a href="{% url 'reports' %}">Отчеты</a>
+  </li>
+  <li class="list-inline-item seprate">
+    <span>/</span>
+  </li>
+  <li class="list-inline-item">Отчет</li>
+{% endblock %}
+
+
+{% block context %}
+  <div class="container mt-5">
+    <table class="table table-horizontal">
+      <thead>
+      <tr>
+        <th scope="col">Параметр отчета</th>
+        <th scope="col">Детали</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <th scope="row">Модель холодильника</th>
+        <td>{{ report.ref_model }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Серийный номер</th>
+        <td>{{ report.ref_serial }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Организация расположения оборудования</th>
+        <td>{{ report.organization }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Адрес расположения оборудования</th>
+        <td>{{ report.organization_address }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Статус отчета</th>
+        {% if report.status == 'approved' %}
+          <td>
+            <span class="status--process">Одобрен</span>
+          </td>
+        {% elif  report.status == 'decline' %}
+          <td>
+            <span class="status--denied">Отклонен</span>
+          </td>
+        {% elif report.status == 'on_review' %}
+          <td>
+            <span class="status--pending">На рассмотрении</span>
+          </td>
+        {% endif %}
+      </tr>
+      {% if report.comment_manager %}
+        <tr>
+          <th scope="row">Комментарий менеджера</th>
+          <td>{{ report.comment_manager }}</td>
+        </tr>
+      {% endif %}
+      {% if report.comment_admin %}
+        <tr>
+          <th scope="row">Комментарий администратора</th>
+          <td>{{ report.comment_admin }}</td>
+        </tr>
+      {% endif %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

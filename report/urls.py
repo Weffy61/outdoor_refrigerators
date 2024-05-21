@@ -6,6 +6,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('reports/', views.get_reports, name='reports'),
+    path('report/<int:report_id>', views.get_report, name='report'),
 ]
 
 

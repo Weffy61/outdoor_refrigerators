@@ -30,6 +30,9 @@ class Refrigerator(models.Model):
     def __str__(self):
         return f'Холодильник {self.model} {self.serial_number}'
 
+    def get_organization(self):
+        return self.organization.name
+
 
 class Organization(models.Model):
     name = models.CharField(verbose_name='Название организации', max_length=200)

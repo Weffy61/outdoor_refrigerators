@@ -4,8 +4,8 @@ from .models import Refrigerator, Report, Photo, Organization
 
 @admin.register(Refrigerator)
 class RefrigeratorAdmin(admin.ModelAdmin):
-    list_display = ['model']
-    raw_id_fields = ['is_assigned']
+    list_display = ['model', 'serial_number', 'get_organization']
+    raw_id_fields = ['is_assigned', 'organization']
 
 
 @admin.register(Report)
