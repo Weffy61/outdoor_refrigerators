@@ -12,6 +12,7 @@ class ReportForm(forms.ModelForm):
         self.fields['comment'].required = False
         self.fields['comment'].label = 'Комментарий (необязательно)'
 
+
 class PhotoForm(forms.ModelForm):
     class Meta:
         model = Photo

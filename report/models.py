@@ -81,6 +81,12 @@ class Report(models.Model):
     comment = models.TextField(verbose_name='Комментарий от торгового представителя', blank=True, null=True)
     comment_manager = models.TextField(verbose_name='Комментарий от менеджера', blank=True, null=True)
     comment_admin = models.TextField(verbose_name='Комментарий от админа', blank=True, null=True)
+    exif_description = models.TextField(
+        verbose_name='Краткий результат проверки EXIF',
+        blank=True,
+        null=True,
+        default=None
+    )
 
     class Meta:
         verbose_name = 'Отчет'
@@ -99,8 +105,9 @@ class Photo(models.Model):
     )
 
     image = models.ImageField(
-        upload_to=lambda instance, filename: instance.get_upload_path(filename),
-        verbose_name='Фото отчета')
+        upload_to='report_photos/',
+        verbose_name='Фото отчета'
+    )
 
     class Meta:
         verbose_name = 'Фотография'
@@ -109,9 +116,12 @@ class Photo(models.Model):
     def __str__(self):
         return f'Фото для отчета {self.report}'
 
-    @staticmethod
-    def get_upload_path(filename):
+    def get_upload_path(self, filename):
         today = datetime.today()
         date_path = today.strftime('%d.%m.%Y')
-        path = os.path.join('report_photos', f'{date_path}', filename)
+        path = os.path.join('report_photos', date_path, filename)
         return path
+
+    def save(self, *args, **kwargs):
+        self.image.field.upload_to = self.get_upload_path(self.image.name)
+        super().save(*args, **kwargs)
