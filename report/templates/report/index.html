@@ -44,9 +44,9 @@
                 <i class="zmdi zmdi-receipt"></i>Мои отчеты
               </button>
             </a>
-            <button class="au-btn au-btn-icon au-btn--green au-btn--small">
+            <a href="{% url 'create_report' %}"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
               <i class="zmdi zmdi-plus"></i>Добавить отчет
-            </button>
+            </button></a>
           </div>
           <h3 class="title-5 m-b-35">холодильное оборудование</h3>
           {#            <div class="table-data__tool">#}
@@ -101,15 +101,15 @@
                   {% if refrigerator.report_status %}
                     {% if refrigerator.report_status == 'approved' %}
                       <td>
-                        <a href="#"><span class="status--process">Одобрен</span></a>
+                        <a href="{% url 'report' refrigerator.report_id %}"><span class="status--process">Одобрен</span></a>
                       </td>
                     {% elif  refrigerator.report_status == 'decline' %}
                       <td>
-                        <a href="#"><span class="status--denied">Отклонен</span></a>
+                        <a href="{% url 'report' refrigerator.report_id %}"><span class="status--denied">Отклонен</span></a>
                       </td>
                     {% elif refrigerator.report_status == 'on_review' %}
                       <td>
-                        <a href="#"><span class="status--pending">На рассмотрении</span></a>
+                        <a href="{% url 'report' refrigerator.report_id %}"><span class="status--pending">На рассмотрении</span></a>
                       </td>
                     {% endif %}
                   {% else %}
@@ -117,9 +117,15 @@
                   {% endif %}
                   <td>
                     <div class="table-data-feature">
-                      <button class="item" data-toggle="tooltip" data-placement="top" title="Добавить отчет">
-                        <i class="zmdi zmdi-camera-add"></i>
-                      </button>
+                      <a href="{% url 'create_report_with_refrigerator' refrigerator_id=refrigerator.id %}">
+                        <button class="item" data-toggle="tooltip" data-placement="top" title="Добавить отчет">
+                          <i class="zmdi zmdi-camera-add"></i>
+                        </button>
+                      </a>
+                      {#                      <button class="item" data-toggle="tooltip" data-placement="top" title="Добавить отчет"#}
+                      {#                              onclick="window.location.href='{% url 'create_report_with_refrigerator' refrigerator_id=refrigerator.id %}'">#}
+                      {#                        <i class="zmdi zmdi-camera-add"></i>#}
+                      {#                      </button>#}
                       <button class="item" data-toggle="tooltip" data-placement="top" title="Удалить холодильник">
                         <i class="zmdi zmdi-delete"></i></button>
                     </div>

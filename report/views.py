@@ -3,8 +3,9 @@ from urllib.parse import urljoin
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
+from report.forms import ReportForm, PhotoFormSet
 from report.models import Refrigerator, Report
 
 
@@ -12,16 +13,18 @@ from report.models import Refrigerator, Report
 def index(request):
     current_user = request.user
     employee_refrigerators = Refrigerator.objects.filter(is_assigned=current_user).prefetch_related('reports')
+
     refrigerators = [{
         'id': refrigerator.pk,
         'serial': refrigerator.serial_number,
         'model': refrigerator.model,
         'organization': refrigerator.organization.name,
         'organization_address': refrigerator.organization.address,
-        'report_date': refrigerator.reports.last().date if refrigerator.reports.last() else None,
-        'report_status': refrigerator.reports.last().status if refrigerator.reports.last() else None
-    } for refrigerator in employee_refrigerators
-    ]
+        'report_date': last_report.date if last_report else None,
+        'report_status': last_report.status if last_report else None,
+        'report_id': last_report.pk if last_report else None,
+    } for refrigerator in employee_refrigerators for last_report in [refrigerator.reports.last()]]
+
     employee_statistics = {
         'refrigerators_count': employee_refrigerators.count(),
         'total_reports': current_user.reports.all().count(),
@@ -117,3 +120,34 @@ def get_current_user(request):
         'photo': request.build_absolute_uri(current_user.photo.url) if current_user.photo else None
     }
     return user
+
+
+@login_required(login_url='login')
+def create_report(request, refrigerator_id=None):
+    user = get_current_user(request)
+    if request.method == 'POST':
+        report_form = ReportForm(request.POST)
+        photo_formset = PhotoFormSet(request.POST, request.FILES)
+
+        if report_form.is_valid() and photo_formset.is_valid():
+            report = report_form.save(commit=False)
+            report.sender = request.user
+            report.save()
+            photo_formset.instance = report
+            photo_formset.save()
+            return redirect('reports')
+
+    else:
+        initial_data = {}
+        if refrigerator_id:
+            refrigerator = get_object_or_404(Refrigerator, id=refrigerator_id)
+            initial_data = {'refrigerator': refrigerator}
+
+        report_form = ReportForm(initial=initial_data)
+        photo_formset = PhotoFormSet()
+
+    return render(request, 'report/create_report.html', {
+        'report_form': report_form,
+        'photo_formset': photo_formset,
+        'user': user
+    })

@@ -1,3 +1,6 @@
+import os
+from datetime import datetime
+
 from django.db import models
 from django.utils import timezone
 
@@ -57,7 +60,8 @@ class Report(models.Model):
         verbose_name='Статус отчета',
         max_length=100,
         db_index=True,
-        choices=STATUS_CHOICES
+        choices=STATUS_CHOICES,
+        default='on_review'
     )
     refrigerator = models.ForeignKey(
         Refrigerator,
@@ -93,7 +97,10 @@ class Photo(models.Model):
         related_name='photos',
         verbose_name='Отчет'
     )
-    image = models.ImageField(upload_to='report_photos/', verbose_name='Фото отчета')
+
+    image = models.ImageField(
+        upload_to=lambda instance, filename: instance.get_upload_path(filename),
+        verbose_name='Фото отчета')
 
     class Meta:
         verbose_name = 'Фотография'
@@ -101,3 +108,10 @@ class Photo(models.Model):
 
     def __str__(self):
         return f'Фото для отчета {self.report}'
+
+    @staticmethod
+    def get_upload_path(filename):
+        today = datetime.today()
+        date_path = today.strftime('%d.%m.%Y')
+        path = os.path.join('report_photos', f'{date_path}', filename)
+        return path
