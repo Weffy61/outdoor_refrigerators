@@ -82,10 +82,9 @@ class Report(models.Model):
     comment_manager = models.TextField(verbose_name='Комментарий от менеджера', blank=True, null=True)
     comment_admin = models.TextField(verbose_name='Комментарий от админа', blank=True, null=True)
     exif_description = models.TextField(
-        verbose_name='Краткий результат проверки EXIF',
+        verbose_name='Результат проверки EXIF',
         blank=True,
         null=True,
-        default=None
     )
 
     class Meta:
@@ -119,7 +118,7 @@ class Photo(models.Model):
     def get_upload_path(self, filename):
         today = datetime.today()
         date_path = today.strftime('%d.%m.%Y')
-        path = os.path.join('report_photos', date_path, filename)
+        path = os.path.join('report_photos', date_path)
         return path
 
     def save(self, *args, **kwargs):
