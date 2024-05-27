@@ -18,8 +18,6 @@
   </form>
 {% endblock %}
 
-{% block statistic %}
-{% endblock %}
 
 {% block context %}
   <section class="p-t-20">
@@ -27,54 +25,96 @@
       <div class="row">
         <div class="col-md-12">
           <div class="table-data__tool-right d-flex justify-content-between mb-3">
-            <a href="{% url 'index' %}"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
-              <i class="zmdi zmdi-receipt"></i>Мои холодильники
-            </button></a>
+            <a href="{% url 'index' %}">
+              <button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                {% if user.is_manager %}
+                  <i class="zmdi zmdi-receipt"></i>Закрепленные холодильники
+                {% else %}
+                  <i class="zmdi zmdi-receipt"></i>Мои холодильники
+                {% endif %}
+              </button>
+            </a>
           </div>
           <h3 class="title-5 m-b-35">отчеты</h3>
           <div class="table-responsive table-responsive-data2">
             <table class="table table-data2">
-              <thead>
-              <tr>
-                <th>организация расположения оборудования</th>
-                <th>адрес расположения оборудования</th>
-                <th>дата отправки отчета</th>
-                <th>статус отчета</th>
-                <th>ссылка на отчет</th>
-              </tr>
-              </thead>
-              <tbody>
-              {% for report in page %}
-                <tr class="tr-shadow">
-                  <td>{{ report.organization }}</td>
-                  <td>{{ report.organization_address }}</td>
-                  <td>{{ report.date }}</td>
-                  {% if report.status == 'approved' %}
-                    <td>
-                      <span class="status--process">Одобрен</span>
-                    </td>
-                  {% elif  report.status == 'decline' %}
-                    <td>
-                      <span class="status--denied">Отклонен</span>
-                    </td>
-                  {% elif report.status == 'on_review' %}
+              {% if user.is_manager %}
+                <thead>
+                <tr>
+                  <th>Отчет отправил</th>
+                  <th>организация расположения оборудования</th>
+                  <th>адрес расположения оборудования</th>
+                  <th>дата отправки отчета</th>
+                  <th>статус отчета</th>
+                  <th>ссылка на отчет</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for report in page %}
+                  <tr class="tr-shadow">
+                    <td>{{ report.sender }}</td>
+                    <td>{{ report.organization }}</td>
+                    <td>{{ report.organization_address }}</td>
+                    <td>{{ report.date }}</td>
                     <td>
                       <span class="status--pending">На рассмотрении</span>
                     </td>
-                  {% endif %}
-                  <td>
-                    <div class="table-data-feature">
-                      <a href="{% url 'report' report.id %}">
-                        <button class="item" data-toggle="tooltip" data-placement="top" title="Перейти">
-                          <i class="zmdi zmdi-arrow-right"></i>
-                        </button>
-                      </a>
-                    </div>
-                  </td>
+                    <td>
+                      <div class="table-data-feature">
+                        <a href="{% url 'report' report.id %}">
+                          <button class="item" data-toggle="tooltip" data-placement="top" title="Перейти">
+                            <i class="zmdi zmdi-arrow-right"></i>
+                          </button>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="spacer"></tr>
+                {% endfor %}
+                </tbody>
+              {% else %}
+                <thead>
+                <tr>
+                  <th>организация расположения оборудования</th>
+                  <th>адрес расположения оборудования</th>
+                  <th>дата отправки отчета</th>
+                  <th>статус отчета</th>
+                  <th>ссылка на отчет</th>
                 </tr>
-                <tr class="spacer"></tr>
-              {% endfor %}
-              </tbody>
+                </thead>
+                <tbody>
+                {% for report in page %}
+                  <tr class="tr-shadow">
+                    <td>{{ report.organization }}</td>
+                    <td>{{ report.organization_address }}</td>
+                    <td>{{ report.date }}</td>
+                    {% if report.status == 'approved' %}
+                      <td>
+                        <span class="status--process">Одобрен</span>
+                      </td>
+                    {% elif  report.status == 'decline' %}
+                      <td>
+                        <span class="status--denied">Отклонен</span>
+                      </td>
+                    {% elif report.status == 'on_review' %}
+                      <td>
+                        <span class="status--pending">На рассмотрении</span>
+                      </td>
+                    {% endif %}
+                    <td>
+                      <div class="table-data-feature">
+                        <a href="{% url 'report' report.id %}">
+                          <button class="item" data-toggle="tooltip" data-placement="top" title="Перейти">
+                            <i class="zmdi zmdi-arrow-right"></i>
+                          </button>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="spacer"></tr>
+                {% endfor %}
+                </tbody>
+              {% endif %}
             </table>
           </div>
           <div class="d-flex justify-content-center mt-3">

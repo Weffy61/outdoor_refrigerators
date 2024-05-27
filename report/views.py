@@ -72,27 +72,43 @@ def index(request):
             'statistic': employee_statistics,
             'user': user,
             'manager': manager_statistic,
-            'manager_refs': manager_assigned_refs
         })
 
 
 @login_required(login_url='login')
 def get_reports(request):
+    current_user = request.user
     search_query = request.GET.get('q', '').strip().lower()
     reports = Report.objects.filter(sender=request.user).select_related('refrigerator')
+    manager_reports = Report.objects.filter(
+        sender__in=current_user.subordinates.all(),
+        status='on_review').prefetch_related('refrigerator').prefetch_related('sender')
+
     status_mapping = {
         'на рассмотрении': 'on_review',
         'одобрен': 'approved',
         'отклонен': 'decline'
     }
-    if search_query:
-        status_query = status_mapping.get(search_query)
-        reports = reports.filter(
-            Q(refrigerator__organization__icontains=search_query) |
-            Q(refrigerator__organization_address__icontains=search_query) |
-            Q(date__icontains=search_query) |
-            Q(status__icontains=status_query) if status_query else Q()
-        )
+    if current_user.is_manager:
+        if search_query:
+            status_query = status_mapping.get(search_query)
+            reports = manager_reports.filter(
+                Q(refrigerator__is_assigned__first_name__contains=search_query) |
+                Q(refrigerator__is_assigned__last_name__contains=search_query) |
+                Q(refrigerator__organization__name__contains=search_query) |
+                Q(refrigerator__organization__address__contains=search_query) |
+                Q(date__contains=search_query) |
+                Q(status__contains=status_query) if status_query else Q()
+            )
+    else:
+        if search_query:
+            status_query = status_mapping.get(search_query)
+            reports = reports.filter(
+                Q(refrigerator__organization__name__contains=search_query) |
+                Q(refrigerator__organization__address__contains=search_query) |
+                Q(date__contains=search_query) |
+                Q(status__contains=status_query) if status_query else Q()
+            )
     reports_statistic = [
         {
             'id': report.pk,
@@ -102,9 +118,22 @@ def get_reports(request):
             'status': report.status,
         } for report in reports
     ]
+    manager_reports_statistic = [
+        {
+            'id': report.pk,
+            'sender': f'{report.sender.first_name} {report.sender.last_name}',
+            'organization': report.refrigerator.organization.name,
+            'organization_address': report.refrigerator.organization.address,
+            'date': report.date,
+            'status': report.status,
+        } for report in manager_reports
+    ]
     user = get_current_user(request)
 
-    paginator = Paginator(reports_statistic, 10)
+    if current_user.is_manager:
+        paginator = Paginator(manager_reports_statistic, 10)
+    else:
+        paginator = Paginator(reports_statistic, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return render(
