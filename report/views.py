@@ -1,5 +1,3 @@
-from urllib.parse import urljoin
-
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -13,7 +11,8 @@ from report.models import Refrigerator, Report
 def index(request):
     current_user = request.user
     employee_refrigerators = Refrigerator.objects.filter(is_assigned=current_user).prefetch_related('reports')
-
+    manager_refrigerators = Refrigerator.objects.filter(
+        is_assigned__in=current_user.subordinates.all()).prefetch_related('reports').prefetch_related('is_assigned')
     refrigerators = [{
         'id': refrigerator.pk,
         'serial': refrigerator.serial_number,
@@ -31,8 +30,38 @@ def index(request):
         'approved_reports': current_user.reports.filter(status='approved').count()
     }
 
+    manager_statistic = {
+        'employees_count': current_user.subordinates.all().count(),
+        'refrigerators_count': manager_refrigerators.count(),
+        'reports_review_count': Report.objects.filter(
+            sender__in=current_user.subordinates.all(),
+            status='on_review').count(),
+        'reports_approved_count': Report.objects.filter(
+            sender__in=current_user.subordinates.all(),
+            status='approved').count(),
+        'reports_total': Report.objects.filter(sender__in=current_user.subordinates.all()).count()
+
+    }
+
+    manager_assigned_refs = [{
+        'id': refrigerator.pk,
+        'serial': refrigerator.serial_number,
+        'model': refrigerator.model,
+        'assigned': f'{refrigerator.is_assigned.first_name} {refrigerator.is_assigned.last_name}',
+        'organization': refrigerator.organization.name,
+        'organization_address': refrigerator.organization.address,
+        'report_date': last_report.date if last_report else None,
+        'report_status': last_report.status if last_report else None,
+        'report_id': last_report.pk if last_report else None,
+
+    } for refrigerator in manager_refrigerators for last_report in [refrigerator.reports.last()]
+    ]
+
     user = get_current_user(request)
-    paginator = Paginator(refrigerators, 10)
+    if current_user.is_manager:
+        paginator = Paginator(manager_assigned_refs, 10)
+    else:
+        paginator = Paginator(refrigerators, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return render(
@@ -41,7 +70,9 @@ def index(request):
         context={
             'page': page,
             'statistic': employee_statistics,
-            'user': user
+            'user': user,
+            'manager': manager_statistic,
+            'manager_refs': manager_assigned_refs
         })
 
 
@@ -117,7 +148,9 @@ def get_current_user(request):
     user = {
         'name': f'{current_user.first_name} {current_user.last_name}',
         'email': current_user.email,
-        'photo': request.build_absolute_uri(current_user.photo.url) if current_user.photo else None
+        'photo': request.build_absolute_uri(current_user.photo.url) if current_user.photo else None,
+        'is_manager': current_user.is_manager,
+        'employee_code': current_user.employee_code,
     }
     return user
 
