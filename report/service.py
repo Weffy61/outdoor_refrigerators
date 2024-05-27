@@ -92,7 +92,7 @@ def get_place(latitude, longitude):
             'localityLanguage': 'ru'
 
         }
-        response = requests.get('https://api.bigdatacloud.net/data/reverse-geocode-client', params=payload)
+        response = requests.get('https://api.bigdatacloud.net/data/reverse-geocode-client', params=payload, timeout=3)
         response.raise_for_status()
         return response.json()
     except (requests.exceptions.HTTPError, requests.exceptions.MissingSchema,
