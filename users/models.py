@@ -26,13 +26,21 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
+    username = None
     email = models.EmailField(unique=True)
     photo = models.ImageField(upload_to='employee_photos/', verbose_name='Фото работника', blank=True, null=True)
-    username = models.CharField(max_length=150, blank=True, null=True)
     employee_code = models.IntegerField(verbose_name='Код сотрудника', blank=True, null=True)
+    is_manager = models.BooleanField(verbose_name='Статус менеджера', default=False)
+    manager = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='subordinates',
+        verbose_name='Менеджер'
+    )
 
     USERNAME_FIELD = 'email'
-
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
     objects = CustomUserManager()
