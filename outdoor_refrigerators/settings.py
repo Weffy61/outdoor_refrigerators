@@ -1,5 +1,7 @@
 import os
 
+import dj_database_url
+
 from environs import Env
 
 env = Env()
@@ -63,10 +65,7 @@ WSGI_APPLICATION = 'outdoor_refrigerators.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': dj_database_url.parse(env('DATABASE_URL'))
 }
 
 
