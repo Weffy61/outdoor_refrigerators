@@ -1,10 +1,12 @@
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 
-from report.forms import ReportForm, PhotoFormSet
+from report.forms import ReportForm, PhotoFormSet, ManagerReportForm
 from report.models import Refrigerator, Report
+from report.service import check_exif
 
 
 @login_required(login_url='login')
@@ -149,17 +151,60 @@ def get_reports(request):
 
 @login_required(login_url='login')
 def get_report(request, report_id):
-    report = get_object_or_404(Report, id=report_id, sender=request.user)
+    current_user = request.user
+    report = get_object_or_404(Report, id=report_id)
+    if not report.exif_description:
+        photos = report.photos.all()
+        if photos.exists():
+            exif_reports = [f'Отчет по файлу {img_num + 1}:\n {check_exif(request.build_absolute_uri(photo.image.url))}'
+                            for img_num, photo in enumerate(photos)]
+            report.exif_description = "\n\n\n\n".join(exif_reports)
+            report.save()
+
+    if report.sender != current_user and report.sender.manager != current_user:
+        raise PermissionDenied
+
+    # if request.method == 'POST':
+    #     form = ManagerReportForm(request.POST, instance=report)
+    #     if form.is_valid():
+    #         form.save()
+    #         return redirect('reports')
+    # else:
+    #     form = ManagerReportForm(instance=report)
+    if request.method == 'POST':
+        form = ManagerReportForm(request.POST)
+        if form.is_valid():
+            # Обработка данных формы
+            manager_review = form.cleaned_data['manager_review']
+            comment_manager = form.cleaned_data['comment_manager']
+
+            # Сохранение данных формы в объект отчета
+            report.manager_review = manager_review
+            report.comment_manager = comment_manager
+            report.save()
+
+            return redirect('reports')
+    else:
+        initial_data = {'manager_review': report.manager_review, 'comment_manager': report.comment_manager}
+        form = ManagerReportForm(initial=initial_data)
+
     report_review = {
+        'sender': f'{report.sender.first_name} {report.sender.last_name}',
         'ref_model': report.refrigerator.model,
         'ref_serial': report.refrigerator.serial_number,
         'organization': report.refrigerator.organization.name,
         'organization_address': report.refrigerator.organization.address,
         'status': report.status,
+        'comment': report.comment,
+        'images': report.photos.all(),
         'comment_manager': report.comment_manager if report.comment_manager else None,
-        'comment_admin': report.comment_admin if report.comment_admin else None
+        'comment_admin': report.comment_admin if report.comment_admin else None,
+        'exif_description': report.exif_description,
+        'manager_review': report.manager_review,
+        'form': form
 
     }
+
     user = get_current_user(request)
 
     return render(
@@ -175,6 +220,7 @@ def get_report(request, report_id):
 def get_current_user(request):
     current_user = request.user
     user = {
+        'id': current_user.pk,
         'name': f'{current_user.first_name} {current_user.last_name}',
         'email': current_user.email,
         'photo': request.build_absolute_uri(current_user.photo.url) if current_user.photo else None,

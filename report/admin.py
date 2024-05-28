@@ -15,7 +15,7 @@ class RefrigeratorAdmin(admin.ModelAdmin):
 class ReportAdmin(admin.ModelAdmin):
     list_display = ['date']
     raw_id_fields = ['refrigerator', 'sender']
-    readonly_fields = ['exif_description']
+    # readonly_fields = ['exif_description']
     change_form_template = 'admin/exif_meta.html'
 
     def response_change(self, request, obj):
@@ -23,8 +23,8 @@ class ReportAdmin(admin.ModelAdmin):
             photos = obj.photos.all()
 
             if photos.exists():
-                exif_reports = [f'Отчет по файлу {index}: {check_exif(request.build_absolute_uri(photo.image.url))}' for
-                                index, photo in enumerate(photos, start=1)]
+                exif_reports = [f'Отчет по файлу {index}:\n {check_exif(request.build_absolute_uri(photo.image.url))}'
+                                for index, photo in enumerate(photos, start=1)]
                 obj.exif_description = "\n\n\n\n".join(exif_reports)
                 obj.save()
                 self.message_user(request, 'Отчет сформирован')

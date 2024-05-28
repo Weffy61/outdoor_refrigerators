@@ -58,24 +58,24 @@ def check_exif(img_path):
         'Подозрение на изменение фото в области времени: Фото изменялось '
     report_test = textwrap.dedent(f'''
     Анализируемый файл:
-    {file}
+{file}
 
     Информация по устройству:
-    {device_brand},
-    {device_model},
-    {os_version},
-    {lens_brand},
-    {lens_model}
+{device_brand.lstrip()},
+{device_model},
+{os_version},
+{lens_brand},
+{lens_model}
 
     Информация по анализу GPS:
-    {gps_latitude},
-    {gps_longitude},
-    {place_details}
+{gps_latitude},
+{gps_longitude},
+{place_details}
 
     Информациия по анализу времени:
-    {datetime_created},
-    {date_problems}
-    ''')
+{datetime_created},
+{date_problems}
+''')
     return report_test
 
 

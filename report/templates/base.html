@@ -22,6 +22,8 @@
   <link href="{% static 'report/css/select2.min.css' %}" rel="stylesheet" media="all">
   <link href="{% static 'report/css/perfect-scrollbar.css' %}" rel="stylesheet" media="all">
   <link href="{% static 'report/css/theme.css' %}" rel="stylesheet" media="all">
+  {% block extra_head %}
+  {% endblock %}
 </head>
 <body class="animsition">
 <div class="page-wrapper">
@@ -205,6 +207,8 @@
     <script src="{% static 'report/js/chartjs/Chart.bundle.min.js' %}"></script>
     <script src="{% static 'report/js/select2/select2.min.js' %}"></script>
     <script src="{% static 'report/js/main.js' %}"></script>
+  {% endblock %}
+  {% block extra_js %}
   {% endblock %}
 </div>
 </body>

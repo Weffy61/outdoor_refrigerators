@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_head %}
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet"/>
+{% endblock %}
+
 {% block location %}
   <li class="list-inline-item seprate">
     <span>/</span>
@@ -24,52 +28,171 @@
         <th scope="col">Детали</th>
       </tr>
       </thead>
-      <tbody>
-      <tr>
-        <th scope="row">Модель холодильника</th>
-        <td>{{ report.ref_model }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Серийный номер</th>
-        <td>{{ report.ref_serial }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Организация расположения оборудования</th>
-        <td>{{ report.organization }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Адрес расположения оборудования</th>
-        <td>{{ report.organization_address }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Статус отчета</th>
-        {% if report.status == 'approved' %}
-          <td>
-            <span class="status--process">Одобрен</span>
-          </td>
-        {% elif  report.status == 'decline' %}
-          <td>
-            <span class="status--denied">Отклонен</span>
-          </td>
-        {% elif report.status == 'on_review' %}
-          <td>
-            <span class="status--pending">На рассмотрении</span>
-          </td>
+      {% if user.is_manager %}
+        <tbody>
+        <tr>
+          <th scope="row">Отправитель отчета</th>
+          <td>{{ report.sender }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Модель холодильника</th>
+          <td>{{ report.ref_model }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Серийный номер</th>
+          <td>{{ report.ref_serial }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Организация расположения оборудования</th>
+          <td>{{ report.organization }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Адрес расположения оборудования</th>
+          <td>{{ report.organization_address }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Статус отчета</th>
+          {% if report.status == 'approved' %}
+            <td>
+              <span class="status--process">Одобрен</span>
+            </td>
+          {% elif  report.status == 'decline' %}
+            <td>
+              <span class="status--denied">Отклонен</span>
+            </td>
+          {% elif report.status == 'on_review' %}
+            <td>
+              <span class="status--pending">На рассмотрении</span>
+            </td>
+          {% endif %}
+        </tr>
+        {% if report.comment %}
+          <tr>
+            <th scope="row">Комментарий торгового представителя</th>
+            <td>{{ report.comment }}</td>
+          </tr>
         {% endif %}
-      </tr>
-      {% if report.comment_manager %}
+        {% if report.comment_manager %}
+          <tr>
+            <th scope="row">Комментарий менеджера</th>
+            <td>{{ report.comment_manager }}</td>
+          </tr>
+        {% endif %}
+        {% if report.comment_admin %}
+          <tr>
+            <th scope="row">Комментарий администратора</th>
+            <td>{{ report.comment_admin }}</td>
+          </tr>
+        {% endif %}
+        {% for image in report.images %}
+          <tr>
+            <th scope="row">Фото {{ forloop.counter }}</th>
+            <td>
+              <a href="{{ image.image.url }}" data-lightbox="report-images" data-title="Фото {{ forloop.counter }}">
+                <img src="{{ image.image.url }}" alt="Фото {{ forloop.counter }}" class="img-thumbnail"
+                     style="width: 150px;">
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+        {% if report.exif_description %}
+          <tr>
+            <th scope="row">EXIF описание</th>
+            <td>
+              <pre style="white-space: pre-wrap;">{{ report.exif_description }}</pre>
+            </td>
+          </tr>
+        {% endif %}
+        <form method="post">
+          {% csrf_token %}
+          <tr>
+            <th><label for="id_manager_review">Рецензия менеджера:</label></th>
+            {% if report.manager_review %}
+              <td>{{ report.manager_review }}</td>
+            {% else %}
+            <td><select name="manager_review" class="custom-select" id="id_manager_review">
+              <option value="" selected>---------</option>
+              <option value="approve">Одобрено</option>
+              <option value="decline">Отклонено</option>
+            </select></td>
+            {% endif %}
+          </tr>
+
+          <tr>
+            <th><label for="id_comment_manager">Комментарий от менеджера:</label></th>
+            {% if report.comment_manager %}
+              <td>{{ report.comment_manager }}</td>
+            {% else %}
+            <td><textarea name="comment_manager" cols="40" rows="10" class="form-control"
+                          id="id_comment_manager"></textarea></td>
+            {% endif %}
+          </tr>
+          <tr>
+            <th></th>
+            <td colspan="2">
+              <button type="submit" class="btn btn-primary">Отправить</button>
+            </td>
+          </tr>
+        </form>
+        </tbody>
+      {% else %}
+        <tbody>
         <tr>
-          <th scope="row">Комментарий менеджера</th>
-          <td>{{ report.comment_manager }}</td>
+          <th scope="row">Модель холодильника</th>
+          <td>{{ report.ref_model }}</td>
         </tr>
-      {% endif %}
-      {% if report.comment_admin %}
         <tr>
-          <th scope="row">Комментарий администратора</th>
-          <td>{{ report.comment_admin }}</td>
+          <th scope="row">Серийный номер</th>
+          <td>{{ report.ref_serial }}</td>
         </tr>
+        <tr>
+          <th scope="row">Организация расположения оборудования</th>
+          <td>{{ report.organization }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Адрес расположения оборудования</th>
+          <td>{{ report.organization_address }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Статус отчета</th>
+          {% if report.status == 'approved' %}
+            <td>
+              <span class="status--process">Одобрен</span>
+            </td>
+          {% elif  report.status == 'decline' %}
+            <td>
+              <span class="status--denied">Отклонен</span>
+            </td>
+          {% elif report.status == 'on_review' %}
+            <td>
+              <span class="status--pending">На рассмотрении</span>
+            </td>
+          {% endif %}
+        </tr>
+        {% if report.comment %}
+          <tr>
+            <th scope="row">Комментарий торгового представителя</th>
+            <td>{{ report.comment }}</td>
+          </tr>
+        {% endif %}
+        {% if report.comment_manager %}
+          <tr>
+            <th scope="row">Комментарий менеджера</th>
+            <td>{{ report.comment_manager }}</td>
+          </tr>
+        {% endif %}
+        {% if report.comment_admin %}
+          <tr>
+            <th scope="row">Комментарий администратора</th>
+            <td>{{ report.comment_admin }}</td>
+          </tr>
+        {% endif %}
+        </tbody>
       {% endif %}
-      </tbody>
     </table>
   </div>
+{% endblock %}
+{% block extra_js %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+
 {% endblock %}

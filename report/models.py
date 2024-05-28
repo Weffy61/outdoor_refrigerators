@@ -86,6 +86,17 @@ class Report(models.Model):
         blank=True,
         null=True,
     )
+    MANAGER_REVIEW_CHOICES = [
+        ('approve', 'Одобрено'),
+        ('decline', 'Отклонено')
+    ]
+    manager_review = models.CharField(
+        verbose_name='Рецензия менеджера',
+        max_length=100,
+        choices=MANAGER_REVIEW_CHOICES,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         verbose_name = 'Отчет'
