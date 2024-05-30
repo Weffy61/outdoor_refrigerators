@@ -164,21 +164,11 @@ def get_report(request, report_id):
     if report.sender != current_user and report.sender.manager != current_user:
         raise PermissionDenied
 
-    # if request.method == 'POST':
-    #     form = ManagerReportForm(request.POST, instance=report)
-    #     if form.is_valid():
-    #         form.save()
-    #         return redirect('reports')
-    # else:
-    #     form = ManagerReportForm(instance=report)
     if request.method == 'POST':
         form = ManagerReportForm(request.POST)
         if form.is_valid():
-            # Обработка данных формы
             manager_review = form.cleaned_data['manager_review']
             comment_manager = form.cleaned_data['comment_manager']
-
-            # Сохранение данных формы в объект отчета
             report.manager_review = manager_review
             report.comment_manager = comment_manager
             report.save()
