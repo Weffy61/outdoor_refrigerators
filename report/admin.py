@@ -15,7 +15,7 @@ class RefrigeratorAdmin(admin.ModelAdmin):
 class ReportAdmin(admin.ModelAdmin):
     list_display = ['date']
     raw_id_fields = ['refrigerator', 'sender']
-    # readonly_fields = ['exif_description']
+    readonly_fields = ['exif_description']
     change_form_template = 'admin/exif_meta.html'
 
     def response_change(self, request, obj):
