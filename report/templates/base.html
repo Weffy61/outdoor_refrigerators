@@ -99,11 +99,11 @@
               {% if user.photo %}
                 <img src="{{ user.photo }}" alt="{{ user.name }}"/>
               {% else %}
-                <img src="{% static 'report/icon/avatar-06.jpg' %}" alt="John Doe"/>
+                <img src="{% static 'report/icon/avatar-06.jpg' %}" alt="{{ user.name }}"/>
               {% endif %}
             </div>
             <div class="content">
-              <a class="js-acc-btn" href="#">john doe</a>
+              <a class="js-acc-btn" href="#">{{ user.name }}</a>
             </div>
             <div class="account-dropdown js-dropdown">
               <div class="info clearfix">

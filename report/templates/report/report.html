@@ -108,13 +108,17 @@
           <tr>
             <th><label for="id_manager_review">Рецензия менеджера:</label></th>
             {% if report.manager_review %}
-              <td>{{ report.manager_review }}</td>
+              {% if report.manager_review == 'approve' %}
+                <td>Одобрено</td>
+              {% else %}
+                <td>Отклонено</td>
+              {% endif %}
             {% else %}
-            <td><select name="manager_review" class="custom-select" id="id_manager_review">
-              <option value="" selected>---------</option>
-              <option value="approve">Одобрено</option>
-              <option value="decline">Отклонено</option>
-            </select></td>
+              <td><select name="manager_review" class="custom-select" id="id_manager_review">
+                <option value="" selected>---------</option>
+                <option value="approve">Одобрено</option>
+                <option value="decline">Отклонено</option>
+              </select></td>
             {% endif %}
           </tr>
 
@@ -123,16 +127,18 @@
             {% if report.comment_manager %}
               <td>{{ report.comment_manager }}</td>
             {% else %}
-            <td><textarea name="comment_manager" cols="40" rows="10" class="form-control"
-                          id="id_comment_manager"></textarea></td>
+              <td><textarea name="comment_manager" cols="40" rows="10" class="form-control"
+                            id="id_comment_manager"></textarea></td>
             {% endif %}
           </tr>
-          <tr>
-            <th></th>
-            <td colspan="2">
-              <button type="submit" class="btn btn-primary">Отправить</button>
-            </td>
-          </tr>
+          {% if not report.manager_review %}
+            <tr>
+              <th></th>
+              <td colspan="2">
+                <button type="submit" class="btn btn-primary">Отправить</button>
+              </td>
+            </tr>
+          {% endif %}
         </form>
         </tbody>
       {% else %}
