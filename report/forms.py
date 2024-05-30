@@ -19,14 +19,6 @@ class PhotoForm(forms.ModelForm):
         fields = ['image']
 
 
-# class ManagerReportForm(forms.ModelForm):
-#     class Meta:
-#         model = Report
-#         fields = ['manager_review', 'comment_manager']
-#         widgets = {
-#             'manager_review': forms.Select(choices=Report.MANAGER_REVIEW_CHOICES, attrs={'class': 'form-control'}),
-#             'comment_manager': forms.Textarea(attrs={'class': 'form-control'}),
-#         }
 class ManagerReportForm(forms.Form):
     manager_review = forms.ChoiceField(
         choices=[('', '---------'), ('approve', 'Одобрено'), ('decline', 'Отклонено')],
