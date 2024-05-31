@@ -37,6 +37,8 @@ class Refrigerator(models.Model):
     def get_organization(self):
         return self.organization.name
 
+    get_organization.short_description = 'Организация'
+
 
 class Organization(models.Model):
     name = models.CharField(verbose_name='Название организации', max_length=200)
