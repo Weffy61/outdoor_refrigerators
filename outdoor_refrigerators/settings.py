@@ -3,9 +3,12 @@ import os
 import dj_database_url
 
 from environs import Env
+from pillow_heif import register_heif_opener
 
 env = Env()
 env.read_env()
+
+register_heif_opener()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -64,6 +67,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'outdoor_refrigerators.wsgi.application'
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 DATABASES = {
     'default': dj_database_url.parse(env('DATABASE_URL'))
 }
