@@ -35,8 +35,10 @@ class Refrigerator(models.Model):
         return f'Холодильник {self.model} {self.serial_number}'
 
     def get_organization(self):
-        return self.organization.name
-
+        if self.organization:
+            return self.organization.name
+        else:
+            return 'Организация отсутствует'
     get_organization.short_description = 'Организация'
 
 
