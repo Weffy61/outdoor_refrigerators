@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+from PIL import Image
 from django.db import models
 from django.utils import timezone
 
@@ -133,5 +134,13 @@ class Photo(models.Model):
         return path
 
     def save(self, *args, **kwargs):
-        self.image.field.upload_to = self.get_upload_path(self.image.name)
+        if self.image:
+            img = Image.open(self.image)
+            exif = img.info.get('exif')
+            self.image.field.upload_to = self.get_upload_path(self.image.name)
+            self.image.save(self.image.name, self.image, save=False)
+            if exif:
+                img = Image.open(self.image.path)
+                img.save(self.image.path, exif=exif)
+
         super().save(*args, **kwargs)
