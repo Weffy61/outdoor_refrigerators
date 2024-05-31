@@ -5,3 +5,5 @@ exif==1.6.0
 requests==2.32.2
 psycopg2-binary==2.9.9
 dj-config-url==0.1.1
+pillow_heif==0.16.0
+ExifRead==3.0.0
