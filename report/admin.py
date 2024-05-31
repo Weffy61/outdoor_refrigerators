@@ -36,7 +36,7 @@ class ReportAdmin(admin.ModelAdmin):
 
 @admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
-    list_display = ['name', 'address']
+    list_display = ['id', 'name', 'address']
 
 
 admin.register(Photo)
