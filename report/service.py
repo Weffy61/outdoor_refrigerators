@@ -1,16 +1,51 @@
+import os
 import textwrap
 from os.path import join, normpath
 from urllib.parse import urlparse, unquote
 
+import PIL.Image
+import pillow_heif
 import requests
 from django.conf import settings
 from exif import Image
 
 
-def check_exif(img_path):
+def get_file_naming(file_path):
+    file_name = os.path.splitext(os.path.basename(file_path))[0]
+    file_extension = os.path.splitext(file_path)[-1].lower()
+    return file_name, file_extension
+
+
+def convert_extension(heic_file_path):
+    heif_file = pillow_heif.read_heif(heic_file_path)
+    image = PIL.Image.frombytes(
+        heif_file.mode,
+        heif_file.size,
+        heif_file.data,
+        'raw',
+        heif_file.mode,
+        heif_file.stride
+    )
+    image_info = heif_file.info
+    image_exif = image_info['exif']
+    base, _ = os.path.splitext(heic_file_path)
+    file_path = f"{base}.jpg"
+    image.save(file_path, 'JPEG', exif=image_exif)
+    return file_path
+
+
+def get_file_path(img_path):
     relative_path = urlparse(img_path).path
     decoded_path = unquote(relative_path)
     file_path = normpath(join(settings.BASE_DIR, decoded_path.lstrip('/')))
+    return file_path, relative_path
+
+
+def check_exif(img_path):
+    file_path, relative_path = get_file_path(img_path)
+    file_name, file_extension = get_file_naming(file_path)
+    if file_extension == '.heic':
+        file_path = convert_extension(file_path)
 
     with open(file_path, 'rb') as img_file:
         img = Image(img_file)
