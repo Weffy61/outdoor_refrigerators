@@ -7,15 +7,22 @@ from .service import check_exif
 
 @admin.register(Refrigerator)
 class RefrigeratorAdmin(admin.ModelAdmin):
-    list_display = ['model', 'serial_number', 'get_organization']
+    list_display = ['model', 'serial_number', 'get_organization', 'get_employee', 'get_last_date_report']
     raw_id_fields = ['is_assigned', 'organization']
+    search_fields = ['model', 'serial_number', 'is_assigned__first_name', 'is_assigned__last_name']
 
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ['date']
+    list_display = ['date', 'get_customer_name', 'get_refrigerator', 'manager_review', 'status']
     raw_id_fields = ['refrigerator', 'sender']
     readonly_fields = ['exif_description']
+    search_fields = [
+        'refrigerator__model',
+        'refrigerator__serial_number',
+        'sender__first_name',
+        'sender__last_name',
+    ]
     change_form_template = 'admin/exif_meta.html'
 
     def response_change(self, request, obj):
@@ -36,7 +43,8 @@ class ReportAdmin(admin.ModelAdmin):
 
 @admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'address']
+    list_display = ['id', 'name', 'address', 'get_total_refrigerators']
+    search_fields = ['name']
 
 
 admin.register(Photo)

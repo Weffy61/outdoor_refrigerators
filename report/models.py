@@ -24,6 +24,7 @@ class Refrigerator(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
+        related_name='organizations',
         verbose_name='Организация расположения оборудования'
     )
 
@@ -39,7 +40,22 @@ class Refrigerator(models.Model):
             return self.organization.name
         else:
             return 'Организация отсутствует'
-    get_organization.short_description = 'Организация'
+    get_organization.short_description = 'Организация расположения ХО'
+
+    def get_last_date_report(self):
+        if self.reports.last():
+            return self.reports.last().date
+        else:
+            return 'Отчет отсутствует'
+    get_last_date_report.short_description = 'Дата последнего отчета'
+
+    def get_employee(self):
+        if self.is_assigned:
+            return f'{self.is_assigned.first_name} {self.is_assigned.last_name}'
+        else:
+            return 'Закрепленный торговый представитель отсутствует'
+
+    get_employee.short_description = 'Ответственный за ХО'
 
 
 class Organization(models.Model):
@@ -52,6 +68,13 @@ class Organization(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_total_refrigerators(self):
+        if self.organizations:
+            return self.organizations.all().count()
+        else:
+            return 'ХО отсутствует'
+    get_total_refrigerators.short_description = 'Закреплено всего ХО'
 
 
 class Report(models.Model):
@@ -106,9 +129,24 @@ class Report(models.Model):
     class Meta:
         verbose_name = 'Отчет'
         verbose_name_plural = 'Отчеты'
+        ordering = ["-date"]
 
     def __str__(self):
         return f'Отчет {self.date} для {self.refrigerator}'
+
+    def get_customer_name(self):
+        if self.sender:
+            return f'{self.sender.first_name} {self.sender.last_name}'
+        else:
+            return 'Торговый представитель отстутствует'
+    get_customer_name.short_description = 'Торговый представитель'
+
+    def get_refrigerator(self):
+        if self.refrigerator:
+            return f'{self.refrigerator.model} {self.refrigerator.serial_number}'
+        else:
+            return 'Холодильное оборудование отсутствует'
+    get_refrigerator.short_description = 'Холодильное оборудование'
 
 
 class Photo(models.Model):

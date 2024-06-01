@@ -22,8 +22,8 @@ class Command(BaseCommand):
             try:
                 if pd.isna(partner):
                     name, address = 'Склад', 'Склад'
-                elif ' / ' in partner:
-                    name, address = partner.split(' / ', 1)
+                elif '/' in partner:
+                    name, address = partner.split('/', 1)
                 else:
                     name, address = partner, ''
 
