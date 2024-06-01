@@ -53,7 +53,7 @@ class Refrigerator(models.Model):
         if self.is_assigned:
             return f'{self.is_assigned.first_name} {self.is_assigned.last_name}'
         else:
-            return 'Закрепленный торговый представитель отсутствует'
+            return 'Закрепленный ответственный отсутствует'
 
     get_employee.short_description = 'Ответственный за ХО'
 
