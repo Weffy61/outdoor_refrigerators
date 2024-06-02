@@ -1,6 +1,8 @@
 from django.contrib import admin
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
+from django.urls import path
 
+from .forms import AssignUserForm
 from .models import Refrigerator, Report, Photo, Organization
 from .service import check_exif
 
@@ -10,6 +12,35 @@ class RefrigeratorAdmin(admin.ModelAdmin):
     list_display = ['model', 'serial_number', 'get_organization', 'get_employee', 'get_last_date_report']
     raw_id_fields = ['is_assigned', 'organization']
     search_fields = ['model', 'serial_number', 'is_assigned__first_name', 'is_assigned__last_name']
+    actions = ['assign_user']
+
+    def assign_user(self, request, queryset):
+        form = None
+        if 'apply' in request.POST:
+
+            form = AssignUserForm(request.POST)
+
+            if form.is_valid():
+                user = form.cleaned_data['user']
+                count = queryset.update(is_assigned=user)
+
+                self.message_user(request, f'{count} холодильников(а) было успешно закреплено за {user}.')
+                return redirect(request.get_full_path())
+        if not form:
+            form = AssignUserForm(initial={'_selected_action': queryset.values_list('id', flat=True)})
+        return render(request, 'admin/assign_user.html', {
+            'items': queryset,
+            'form': form,
+            'title': 'Выбрать ответственного'})
+
+    assign_user.short_description = 'Выбрать ответственного'
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('assign_user/', self.admin_site.admin_view(self.assign_user), name='assign_user'),
+        ]
+        return custom_urls + urls
 
 
 @admin.register(Report)

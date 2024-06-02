@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth import get_user_model
+
 from .models import Report, Photo
 
 
@@ -27,6 +29,11 @@ class ManagerReportForm(forms.Form):
     comment_manager = forms.CharField(
         widget=forms.Textarea(attrs={'class': 'form-control', 'cols': '40', 'rows': '10', 'id': 'id_comment_manager'})
     )
+
+
+class AssignUserForm(forms.Form):
+    _selected_action = forms.CharField(widget=forms.MultipleHiddenInput)
+    user = forms.ModelChoiceField(queryset=get_user_model().objects.all(), label="Выберите пользователя")
 
 
 PhotoFormSet = forms.inlineformset_factory(Report, Photo, form=PhotoForm, extra=2, can_delete=False)
