@@ -10,7 +10,7 @@
     <span>/</span>
   </li>
   <li class="list-inline-item active">
-    <a href="{% url 'reports' %}">Отчеты</a>
+    <a href="{% url 'reports' %}">Мои отчеты</a>
   </li>
   <li class="list-inline-item seprate">
     <span>/</span>
@@ -28,7 +28,7 @@
         <th scope="col">Детали</th>
       </tr>
       </thead>
-      {% if user.is_manager %}
+      {% if user.is_manager and user.id != report.sender_user_id %}
         <tbody>
         <tr>
           <th scope="row">Отправитель отчета</th>

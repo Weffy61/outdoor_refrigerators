@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Закрепленные холодильники{% endblock %}
+
+{% block location %}
+  <li class="list-inline-item seprate">
+    <span>/</span>
+  </li>
+  <li class="list-inline-item">Закрепленное ХО</li>
+{% endblock %}
+
+{% block statistic %}
+  <section class="welcome p-t-10">
+    <div class="container">
+      <div class="row mt-4">
+        <div class="col-md-12">
+          <div class="table-responsive table-responsive-data2">
+            <table class="table table-data2 text-center">
+              <thead>
+              <tr>
+              <tr>
+                <th>Менеджер</th>
+                <th>Сотрудники</th>
+                <th>На контроле холодильников</th>
+                <th>Отчетов на проверку</th>
+                <th>Отчетов одобрено</th>
+                <th>Всего отчетов</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ manager.employees_count }}</td>
+                <td>{{ manager.refrigerators_count }}</td>
+                <td>{{ manager.reports_review_count }}</td>
+                <td>{{ manager.reports_approved_count }}</td>
+                <td>{{ manager.reports_total }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+
+{% block context %}
+  <section class="p-t-20">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-data__tool-right d-flex justify-content-between mb-3">
+            <a href="{% url 'reports' %}">
+              <button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                <i class="zmdi zmdi-receipt"></i>Мои отчеты
+              </button>
+            </a>
+            <a href="{% url 'manager_reports' %}">
+              <button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                <i class="zmdi zmdi-receipt"></i>Проверка отчетов
+              </button>
+            </a>
+            <a href="{% url 'index' %}">
+              <button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                <i class="zmdi zmdi-receipt"></i>Мои холодильники
+              </button>
+            </a>
+          </div>
+
+          <h3 class="title-5 m-b-35">холодильное оборудование</h3>
+          <div class="table-responsive table-responsive-data2">
+            <table class="table table-data2">
+              <thead>
+              <tr>
+                <th>серийный номер</th>
+                <th>модель</th>
+                <th>закреплен за</th>
+                <th>организация расположения</th>
+                <th>адрес расположения</th>
+                <th>дата последнего отчета</th>
+                <th>статус последнего отчета</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for refrigerator in page %}
+                <tr class="tr-shadow">
+                  <td>{{ refrigerator.serial }}</td>
+                  <td class="desc">{{ refrigerator.model }}</td>
+                  <td>{{ refrigerator.assigned }}</td>
+                  <td>{{ refrigerator.organization }}</td>
+                  <td>{{ refrigerator.organization_address }}</td>
+                  {% if refrigerator.report_date %}
+                    <td>{{ refrigerator.report_date }}</td>
+                  {% else %}
+                    <td>Отчет отсутствует</td>
+                  {% endif %}
+                  {% if refrigerator.report_status %}
+                    {% if refrigerator.report_status == 'approved' %}
+                      <td>
+                        <a href="{% url 'report' refrigerator.report_id %}"><span
+                          class="status--process">Одобрен</span></a>
+                      </td>
+                    {% elif  refrigerator.report_status == 'decline' %}
+                      <td>
+                        <a href="{% url 'report' refrigerator.report_id %}"><span
+                          class="status--denied">Отклонен</span></a>
+                      </td>
+                    {% elif refrigerator.report_status == 'on_review' %}
+                      <td>
+                        <a href="{% url 'report' refrigerator.report_id %}"><span class="status--pending">На рассмотрении</span></a>
+                      </td>
+                    {% endif %}
+                  {% else %}
+                    <td>Отчет отсутствует</td>
+                  {% endif %}
+                  <td>
+                    <div class="table-data-feature">
+                      <a href="{% url 'create_report_with_refrigerator' refrigerator_id=refrigerator.id %}">
+                        <button class="item" data-toggle="tooltip" data-placement="top" title="Добавить отчет">
+                          <i class="zmdi zmdi-camera-add"></i>
+                        </button>
+                      </a>
+                      <button class="item" data-toggle="tooltip" data-placement="top" title="Удалить холодильник">
+                        <i class="zmdi zmdi-delete"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="spacer"></tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-center mt-3">
+            <nav aria-label="Page navigation">
+              <ul class="pagination">
+                {% if page.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="First">
+                      <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page.previous_page_number }}" aria-label="Previous">
+                      <span aria-hidden="true">Назад</span>
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="First">
+                      <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                  </li>
+                  <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Previous">
+                      <span aria-hidden="true">Назад</span>
+                    </a>
+                  </li>
+                {% endif %}
+                {% for num in page.paginator.page_range %}
+                  {% if page.number == num %}
+                    <li class="page-item active">
+                      <a class="page-link" href="#">{{ num }}</a>
+                    </li>
+                  {% elif num > page.number|add:'-3' and num < page.number|add:'3' %}
+                    <li class="page-item">
+                      <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+                {% if page.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page.next_page_number }}" aria-label="Next">
+                      <span aria-hidden="true">Вперед</span>
+                    </a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page.paginator.num_pages }}" aria-label="Last">
+                      <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Next">
+                      <span aria-hidden="true">Вперед</span>
+                    </a>
+                  </li>
+                  <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Last">
+                      <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+

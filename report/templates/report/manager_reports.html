@@ -1,16 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Мои отчеты{% endblock %}
-
+{% block title %}Отчеты закрепленных ТП{% endblock %}
 {% block location %}
   <li class="list-inline-item seprate">
     <span>/</span>
   </li>
-  <li class="list-inline-item">Мои отчеты</li>
+  <li class="list-inline-item">Проверка отчетов</li>
 {% endblock %}
-
-
 
 {% block search %}
   <form class="au-form-icon--sm" action="{% url 'reports' %}" method="get">
@@ -29,76 +26,59 @@
       <div class="row">
         <div class="col-md-12">
           <div class="table-data__tool-right d-flex justify-content-between mb-3">
-            {% if user.is_manager %}
-              <a href="{% url 'manager_reports' %}">
-                <button class="au-btn au-btn-icon au-btn--green au-btn--small">
-                  <i class="zmdi zmdi-receipt"></i>Проверка отчетов
-                </button>
-              </a>
-              <a href="{% url 'index' %}">
-                <button class="au-btn au-btn-icon au-btn--green au-btn--small">
-                  <i class="zmdi zmdi-receipt"></i>Мои холодильники
-                </button>
-              </a>
-              <a href="{% url 'manager_refrigerators' %}">
+            <a href="{% url 'reports' %}">
+              <button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                <i class="zmdi zmdi-receipt"></i>Мои отчеты
+              </button>
+            </a>
+            <a href="{% url 'index' %}">
+              <button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                <i class="zmdi zmdi-receipt"></i>Мои холодильники
+              </button>
+            </a>
+            <a href="{% url 'manager_refrigerators' %}">
               <button class="au-btn au-btn-icon au-btn--green au-btn--small">
                 <i class="zmdi zmdi-receipt"></i>Закрепленные холодильники
               </button>
             </a>
-
-            {% else %}
-              <a href="{% url 'index' %}">
-                <button class="au-btn au-btn-icon au-btn--green au-btn--small">
-                  <i class="zmdi zmdi-receipt"></i>Мои холодильники
-                </button>
-              </a>
-            {% endif %}
           </div>
-          <h3 class="title-5 m-b-35">отчеты</h3>
+
+          <h3 class="title-5 m-b-35">отчеты на проверку</h3>
           <div class="table-responsive table-responsive-data2">
             <table class="table table-data2">
-
-                <thead>
-                <tr>
-                  <th>организация расположения оборудования</th>
-                  <th>адрес расположения оборудования</th>
-                  <th>дата отправки отчета</th>
-                  <th>статус отчета</th>
-                  <th>ссылка на отчет</th>
+              <thead>
+              <tr>
+                <th>Отчет отправил</th>
+                <th>организация расположения оборудования</th>
+                <th>адрес расположения оборудования</th>
+                <th>дата отправки отчета</th>
+                <th>статус отчета</th>
+                <th>ссылка на отчет</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for report in page %}
+                <tr class="tr-shadow">
+                  <td>{{ report.sender }}</td>
+                  <td>{{ report.organization }}</td>
+                  <td>{{ report.organization_address }}</td>
+                  <td>{{ report.date }}</td>
+                  <td>
+                    <span class="status--pending">На рассмотрении</span>
+                  </td>
+                  <td>
+                    <div class="table-data-feature">
+                      <a href="{% url 'report' report.id %}">
+                        <button class="item" data-toggle="tooltip" data-placement="top" title="Перейти">
+                          <i class="zmdi zmdi-arrow-right"></i>
+                        </button>
+                      </a>
+                    </div>
+                  </td>
                 </tr>
-                </thead>
-                <tbody>
-                {% for report in page %}
-                  <tr class="tr-shadow">
-                    <td>{{ report.organization }}</td>
-                    <td>{{ report.organization_address }}</td>
-                    <td>{{ report.date }}</td>
-                    {% if report.status == 'approved' %}
-                      <td>
-                        <span class="status--process">Одобрен</span>
-                      </td>
-                    {% elif  report.status == 'decline' %}
-                      <td>
-                        <span class="status--denied">Отклонен</span>
-                      </td>
-                    {% elif report.status == 'on_review' %}
-                      <td>
-                        <span class="status--pending">На рассмотрении</span>
-                      </td>
-                    {% endif %}
-                    <td>
-                      <div class="table-data-feature">
-                        <a href="{% url 'report' report.id %}">
-                          <button class="item" data-toggle="tooltip" data-placement="top" title="Перейти">
-                            <i class="zmdi zmdi-arrow-right"></i>
-                          </button>
-                        </a>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="spacer"></tr>
-                {% endfor %}
-                </tbody>
+                <tr class="spacer"></tr>
+              {% endfor %}
+              </tbody>
             </table>
           </div>
           <div class="d-flex justify-content-center mt-3">
