@@ -4,6 +4,7 @@ from datetime import datetime
 from PIL import Image
 from django.db import models
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 
 from users.models import CustomUser
 
@@ -186,3 +187,10 @@ class Photo(models.Model):
                 img.save(self.image.path, exif=exif)
 
         super().save(*args, **kwargs)
+
+    def image_tag(self):
+        if self.image:
+            return mark_safe(f'<img src="{self.image.url}" width="300" height="500" />')
+        return "No Image"
+
+    image_tag.short_description = 'Фото отчета'

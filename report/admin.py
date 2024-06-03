@@ -43,17 +43,31 @@ class RefrigeratorAdmin(admin.ModelAdmin):
         return custom_urls + urls
 
 
+class PhotoInline(admin.TabularInline):
+    model = Photo
+    readonly_fields = ['image_tag']
+    can_delete = False
+    extra = 0
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
     list_display = ['date', 'get_customer_name', 'get_refrigerator', 'manager_review', 'status']
     raw_id_fields = ['refrigerator', 'sender']
-    readonly_fields = ['exif_description']
+    readonly_fields = ['exif_description', 'date']
     search_fields = [
         'refrigerator__model',
         'refrigerator__serial_number',
         'sender__first_name',
         'sender__last_name',
     ]
+    inlines = [PhotoInline]
     change_form_template = 'admin/exif_meta.html'
 
     def response_change(self, request, obj):
@@ -79,3 +93,4 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 
 admin.register(Photo)
+
