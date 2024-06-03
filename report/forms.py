@@ -27,6 +27,7 @@ class ManagerReportForm(forms.Form):
         widget=forms.Select(attrs={'name': 'manager_review', 'class': 'custom-select', 'id': 'id_manager_review'})
     )
     comment_manager = forms.CharField(
+        required=False,
         widget=forms.Textarea(attrs={'class': 'form-control', 'cols': '40', 'rows': '10', 'id': 'id_comment_manager'})
     )
 
