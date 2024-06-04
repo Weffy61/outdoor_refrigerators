@@ -1,11 +1,14 @@
 import os
 from datetime import datetime
 
-from PIL import Image
+from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
+from report.service import convert_extension
 from users.models import CustomUser
 
 
@@ -159,7 +162,7 @@ class Photo(models.Model):
     )
 
     image = models.ImageField(
-        upload_to='report_photos/',
+        upload_to=os.path.join('report_photos', datetime.today().strftime('%d.%m.%Y')),
         verbose_name='Фото отчета'
     )
 
@@ -170,27 +173,21 @@ class Photo(models.Model):
     def __str__(self):
         return f'Фото для отчета {self.report}'
 
-    def get_upload_path(self, filename):
-        today = datetime.today()
-        date_path = today.strftime('%d.%m.%Y')
-        path = os.path.join('report_photos', date_path)
-        return path
-
-    def save(self, *args, **kwargs):
-        if self.image:
-            img = Image.open(self.image)
-            exif = img.info.get('exif')
-            self.image.field.upload_to = self.get_upload_path(self.image.name)
-            self.image.save(self.image.name, self.image, save=False)
-            if exif:
-                img = Image.open(self.image.path)
-                img.save(self.image.path, exif=exif)
-
-        super().save(*args, **kwargs)
-
     def image_tag(self):
         if self.image:
-            return mark_safe(f'<img src="{self.image.url}" width="300" height="500" />')
+            return mark_safe(f'<img src="{self.image.url}" width="500" height="500" />')
         return "No Image"
 
     image_tag.short_description = 'Фото отчета'
+
+
+@receiver(post_save, sender=Photo)
+def convert_heic_to_jpg(sender, instance, created, **kwargs):
+    if instance.image.name.lower().endswith('.heic'):
+        heic_file_path = instance.image.path
+        file_path = convert_extension(heic_file_path)
+        relative_path = os.path.relpath(file_path, settings.MEDIA_ROOT)
+        instance.image.name = relative_path
+        instance.save()
+
+
