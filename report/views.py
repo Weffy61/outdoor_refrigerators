@@ -290,6 +290,7 @@ def create_report(request, refrigerator_id=None):
     })
 
 
+@login_required(login_url='login')
 def get_upload_instruction(request):
     user = get_current_user(request)
     return render(request, 'report/report_photo_instruction.html', {'user': user})
