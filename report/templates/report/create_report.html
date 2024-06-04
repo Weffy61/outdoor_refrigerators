@@ -19,6 +19,12 @@
   <section class="p-t-20">
     <div class="container mt-5">
       <h3 class="title-5 m-b-35">Создать отчет</h3>
+      <div class="alert alert-info" role="alert">
+        <strong>Внимательно ознакомьтесь с <a href="{% url 'upload_instruction' %}" target="_blank" class="alert-link">инструкцией
+          по
+          загрузке
+          фото</a>.</strong>
+      </div>
       <form method="post" enctype="multipart/form-data" id="reportForm">
         {% csrf_token %}
         <div class="form-group row">

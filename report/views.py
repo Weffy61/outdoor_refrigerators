@@ -288,3 +288,8 @@ def create_report(request, refrigerator_id=None):
         'photo_formset': photo_formset,
         'user': user
     })
+
+
+def get_upload_instruction(request):
+    user = get_current_user(request)
+    return render(request, 'report/report_photo_instruction.html', {'user': user})

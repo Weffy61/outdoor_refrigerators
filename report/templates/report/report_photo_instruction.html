@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Инструкция по загрузке отчета{% endblock %}
+
+
+{% block location %}
+  <li class="list-inline-item seprate">
+    <span>/</span>
+  </li>
+  <li class="list-inline-item active">
+    <a href="{% url 'reports' %}">Мои отчеты</a>
+  </li>
+  <li class="list-inline-item seprate">
+    <span>/</span>
+  </li>
+  <li class="list-inline-item">Инструкция по загрузке отчета</li>
+{% endblock %}
+
+
+{% block context %}
+
+  <div class="container">
+    <h1 class="text-center mb-5">Инструкция по загрузке фотоотчета</h1>
+
+    <div class="instruction-section">
+      <div class="instruction-header">
+        <h2>Для iPhone</h2>
+      </div>
+      <div class="instruction-body">
+        <ol>
+          <li>Сделайте фото холодильного оборудования, а также фото с его серийным номером.</li>
+          <li class="instruction-step">
+            <div>Откройте приложение «Фото» на вашем iPhone.</div>
+            <img src="{% static 'report/img/iphone_step_2.jpeg' %}" alt="Откройте приложение «Фото»">
+          </li>
+          <li class="instruction-step">
+            <div>Выберите фотографии, которые вы хотите загрузить.</div>
+            <img src="{% static 'report/img/iphone_step_3.jpg' %}" alt="Выберите фотографии">
+          </li>
+          <li class="instruction-step">
+            <div>Нажмите на иконку «Поделиться» в левом нижнем углу экрана.</div>
+            <img src="{% static 'report/img/iphone_step_4.jpg' %}" alt="Нажмите на иконку «Поделиться»">
+          </li>
+          <li class="instruction-step">
+            <div>Выберите «Сохранить в Файлы» и выберите папку для сохранения.</div>
+            <img src="{% static 'report/img/iphone_step_5.jpeg' %}" alt="Сохраните в Файлы">
+          </li>
+          <li class="instruction-step">
+            <div>Перейдите на сайт и откройте форму загрузки фотоотчета.</div>
+            <img src="{% static 'report/img/iphone_step_6_1.jpg' %}" alt="Загрузите файл">
+            <img src="{% static 'report/img/iphone_step_6_2.jpeg' %}" alt="Откройте форму загрузки">
+          </li>
+          <li class="instruction-step">
+            <div>Нажмите кнопку «Выберите файл» и выберите сохраненную фотографию из приложения «Файлы».
+              Повторите действия для второй фотографии. Отправку осуществлять только данным способом, в противном случае
+              Ваш отчет может быть не принят.
+            </div>
+
+            <img src="{% static 'report/img/iphone_step_7_1.jpg' %}" alt="Загрузите файл">
+            <img src="{% static 'report/img/iphone_step_7_2.jpg' %}" alt="Загрузите файл">
+          </li>
+          <li class="instruction-step">
+            <div>Убедитесь, что фотографии успешно загрузились, и нажмите кнопку "Отправить", чтобы отправить отчет.
+            </div>
+            <img src="{% static 'report/img/iphone_step_8.jpeg' %}" alt="Отправьте отчет">
+          </li>
+          <li class="instruction-step">
+            <div>После успешной отправки отчета вы будете перенаправлены в "Мои отчеты", где у
+              отчета будет статус "На рассмотрении".
+            </div>
+            <img src="{% static 'report/img/iphone_step_9.jpeg' %}" alt="Успешная отправка отчета">
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="instruction-section">
+      <div class="instruction-header">
+        <h2>Для Android</h2>
+      </div>
+      <div class="instruction-body">
+        <ol>
+          <li class="instruction-step">
+            <div>Сделайте фото холодильного оборудования, а также фото с его серийным номером. Убедитесь, что у вас
+              включено сохранение данных о местоположении в настройках фото, в противном случае
+              ваш отчет может быть отклонен.
+            </div>
+            <img src="{% static 'report/img/android_step_1.jpeg' %}" alt="GPS настройка">
+          </li>
+
+          <li class="instruction-step">
+            <div>Перейдите на сайт и откройте форму загрузки фотоотчета.</div>
+            <img src="{% static 'report/img/android_step_2_1.jpeg' %}" alt="Добавить отчет">
+            <img src="{% static 'report/img/android_step_2_2.jpeg' %}" alt="Вкладка создания отчета">
+          </li>
+
+          <li class="instruction-step">
+            <div>Нажмите кнопку «Выберите файл» и выберите фотографию. Повторите
+              действия для второй фотографии.</div>
+            <img src="{% static 'report/img/android_step_3_1.jpeg' %}" alt="Выберите файл">
+            <img src="{% static 'report/img/android_step_3_2.jpeg' %}" alt="Файл выбран>">
+          </li>
+
+          <li class="instruction-step">
+            <div>Убедитесь, что фотографии успешно загрузились, и нажмите кнопку "Отправить", чтобы отправить отчет.
+            </div>
+            <img src="{% static 'report/img/android_step_4.jpeg' %}" alt="Отправьте отчет">
+          </li>
+          <li class="instruction-step">
+            <div>После успешной отправки отчета вы будете перенаправлены в "Мои отчеты", где у
+              отчета будет статус "На рассмотрении".
+            </div>
+            <img src="{% static 'report/img/android_step_5.jpeg' %}" alt="Успешная отправка отчета">
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+{% endblock %}

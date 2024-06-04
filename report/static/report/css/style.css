@@ -1,0 +1,30 @@
+
+.instruction-section {
+  margin-bottom: 30px;
+}
+
+.instruction-header {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.instruction-body {
+  padding: 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  background-color: #ffffff;
+}
+
+.instruction-step {
+  margin-bottom: 20px;
+}
+
+.instruction-step img {
+  max-width: 100%;
+  height: auto;
+  max-height: 400px;
+  margin-top: 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+}
