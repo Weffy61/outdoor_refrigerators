@@ -90,6 +90,7 @@ class ReportAdmin(admin.ModelAdmin):
 
 class RefrigeratorInline(admin.TabularInline):
     model = Refrigerator
+    extra = 1
 
 
 @admin.register(Organization)
