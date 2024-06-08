@@ -67,8 +67,6 @@ class Command(BaseCommand):
 
             except (TypeError, ValueError, AttributeError) as error:
                 print(f'Не импортирована строка {line}, потому что {error}')
-                print(partner)
-                print(type(partner))
                 continue
 
         self.stdout.write(self.style.SUCCESS('Данные успешно импортированы'))
