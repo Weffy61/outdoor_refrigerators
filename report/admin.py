@@ -86,10 +86,15 @@ class ReportAdmin(admin.ModelAdmin):
         return super().response_change(request, obj)
 
 
+class RefrigeratorInline(admin.TabularInline):
+    model = Refrigerator
+
+
 @admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'address', 'get_total_refrigerators']
     search_fields = ['name']
+    inlines = [RefrigeratorInline]
 
 
 admin.register(Photo)
