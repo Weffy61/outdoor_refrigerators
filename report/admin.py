@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.db.models import Window, F
+from django.db.models.functions import RowNumber
 from django.shortcuts import redirect, render
 from django.urls import path
 
@@ -92,9 +94,23 @@ class RefrigeratorInline(admin.TabularInline):
 
 @admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'address', 'get_total_refrigerators']
+    list_display = ['display_order', 'name', 'address', 'get_total_refrigerators']
     search_fields = ['name']
     inlines = [RefrigeratorInline]
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.annotate(display_order=Window(
+            expression=RowNumber(),
+            order_by=F('id').desc()
+        ))
+        return queryset
+
+    def display_order(self, obj):
+        return obj.display_order
+
+    display_order.admin_order_field = 'display_order'
+    display_order.short_description = '№'
 
 
 admin.register(Photo)
