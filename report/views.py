@@ -263,7 +263,7 @@ def get_current_user(request):
 def create_report(request, refrigerator_id=None):
     user = get_current_user(request)
     if request.method == 'POST':
-        report_form = ReportForm(request.POST)
+        report_form = ReportForm(request.POST, user=request.user)
         photo_formset = PhotoFormSet(request.POST, request.FILES)
 
         if report_form.is_valid() and photo_formset.is_valid():
@@ -280,7 +280,7 @@ def create_report(request, refrigerator_id=None):
             refrigerator = get_object_or_404(Refrigerator, id=refrigerator_id)
             initial_data = {'refrigerator': refrigerator}
 
-        report_form = ReportForm(initial=initial_data)
+        report_form = ReportForm(initial=initial_data, user=request.user)
         photo_formset = PhotoFormSet()
 
     return render(request, 'report/create_report.html', {

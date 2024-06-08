@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-from .models import Report, Photo
+from .models import Report, Photo, Refrigerator
 
 
 class ReportForm(forms.ModelForm):
@@ -10,7 +10,9 @@ class ReportForm(forms.ModelForm):
         fields = ['refrigerator', 'comment']
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
+        self.fields['refrigerator'].queryset = Refrigerator.objects.filter(is_assigned=user)
         self.fields['comment'].required = False
         self.fields['comment'].label = 'Комментарий (необязательно)'
 
