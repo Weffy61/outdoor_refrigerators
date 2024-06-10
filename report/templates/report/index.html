@@ -2,40 +2,44 @@
 {% load static %}
 
 {% block title %}Мои холодильники{% endblock %}
-{% block statistic %}
-  <section class="welcome p-t-10">
-    <div class="container">
-      <div class="row mt-4">
-        <div class="col-md-12">
-          <div class="table-responsive table-responsive-data2">
-            <table class="table table-data2 text-center">
-              <thead>
-              <tr>
-                {% if user.is_manager %}
-                  <th>Менеджер</th>
-                {% else %}
-                  <th>Торговый представитель</th>
-                {% endif %}
-                <th>На учете холодильников</th>
-                <th>Отчетов отправил</th>
-                <th>Отчетов одобрено</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td>{{ user.name }}</td>
-                <td>{{ statistic.refrigerators_count }}</td>
-                <td>{{ statistic.total_reports }}</td>
-                <td>{{ statistic.approved_reports }}</td>
-              </tr>
-              </tbody>
-            </table>
+
+  {% block statistic %}
+    {% if not search_query %}
+    <section class="welcome p-t-10">
+      <div class="container">
+        <div class="row mt-4">
+          <div class="col-md-12">
+            <div class="table-responsive table-responsive-data2">
+              <table class="table table-data2 text-center">
+                <thead>
+                <tr>
+                  {% if user.is_manager %}
+                    <th>Менеджер</th>
+                  {% else %}
+                    <th>Торговый представитель</th>
+                  {% endif %}
+                  <th>На учете холодильников</th>
+                  <th>Отчетов отправил</th>
+                  <th>Отчетов одобрено</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>{{ user.name }}</td>
+                  <td>{{ statistic.refrigerators_count }}</td>
+                  <td>{{ statistic.total_reports }}</td>
+                  <td>{{ statistic.approved_reports }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-{% endblock %}
+    </section>
+    {% endif %}
+  {% endblock %}
+
 
 
 {% block context %}
@@ -43,6 +47,11 @@
     <div class="container">
       <div class="row">
         <div class="col-md-12">
+          <form method="get" action="{% url 'index' %}" class="form-inline mb-3">
+            <input class="form-control mr-sm-2" type="search" placeholder="Поиск по организациям" aria-label="Search"
+                   name="q" value="{{ request.GET.q }}">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
+          </form>
           <div class="table-data__tool-right d-flex justify-content-between mb-3">
             {% if user.is_manager %}
               <a href="{% url 'manager_refrigerators' %}">
@@ -79,64 +88,64 @@
           <div class="table-responsive table-responsive-data2">
             <table class="table table-data2">
 
-                <thead>
-                <tr>
-                  <th>серийный номер</th>
-                  <th>модель</th>
-                  <th>организация расположения</th>
-                  <th>адрес расположения</th>
-                  <th>дата последнего отчета</th>
-                  <th>статус последнего отчета</th>
-                  <th></th>
+              <thead>
+              <tr>
+                <th>серийный номер</th>
+                <th>модель</th>
+                <th>организация расположения</th>
+                <th>адрес расположения</th>
+                <th>дата последнего отчета</th>
+                <th>статус последнего отчета</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for refrigerator in page %}
+                <tr class="tr-shadow">
+                  <td>{{ refrigerator.serial }}</td>
+                  <td class="desc">{{ refrigerator.model }}</td>
+                  <td>{{ refrigerator.organization }}</td>
+                  <td>{{ refrigerator.organization_address }}</td>
+                  {% if refrigerator.report_date %}
+                    <td>{{ refrigerator.report_date }}</td>
+                  {% else %}
+                    <td>Отчет отсутствует</td>
+                  {% endif %}
+                  {% if refrigerator.report_status %}
+                    {% if refrigerator.report_status == 'approved' %}
+                      <td>
+                        <a href="{% url 'report' refrigerator.report_id %}"><span
+                          class="status--process">Одобрен</span></a>
+                      </td>
+                    {% elif  refrigerator.report_status == 'decline' %}
+                      <td>
+                        <a href="{% url 'report' refrigerator.report_id %}"><span
+                          class="status--denied">Отклонен</span></a>
+                      </td>
+                    {% elif refrigerator.report_status == 'on_review' %}
+                      <td>
+                        <a href="{% url 'report' refrigerator.report_id %}"><span class="status--pending">На рассмотрении</span></a>
+                      </td>
+                    {% endif %}
+                  {% else %}
+                    <td>Отчет отсутствует</td>
+                  {% endif %}
+                  <td>
+                    <div class="table-data-feature">
+                      <a href="{% url 'create_report_with_refrigerator' refrigerator_id=refrigerator.id %}">
+                        <button class="item" data-toggle="tooltip" data-placement="top" title="Добавить отчет">
+                          <i class="zmdi zmdi-camera-add"></i>
+                        </button>
+                      </a>
+                      <button class="item" data-toggle="tooltip" data-placement="top" title="Удалить холодильник">
+                        <i class="zmdi zmdi-delete"></i></button>
+                    </div>
+                  </td>
                 </tr>
-                </thead>
-                <tbody>
-                {% for refrigerator in page %}
-                  <tr class="tr-shadow">
-                    <td>{{ refrigerator.serial }}</td>
-                    <td class="desc">{{ refrigerator.model }}</td>
-                    <td>{{ refrigerator.organization }}</td>
-                    <td>{{ refrigerator.organization_address }}</td>
-                    {% if refrigerator.report_date %}
-                      <td>{{ refrigerator.report_date }}</td>
-                    {% else %}
-                      <td>Отчет отсутствует</td>
-                    {% endif %}
-                    {% if refrigerator.report_status %}
-                      {% if refrigerator.report_status == 'approved' %}
-                        <td>
-                          <a href="{% url 'report' refrigerator.report_id %}"><span
-                            class="status--process">Одобрен</span></a>
-                        </td>
-                      {% elif  refrigerator.report_status == 'decline' %}
-                        <td>
-                          <a href="{% url 'report' refrigerator.report_id %}"><span
-                            class="status--denied">Отклонен</span></a>
-                        </td>
-                      {% elif refrigerator.report_status == 'on_review' %}
-                        <td>
-                          <a href="{% url 'report' refrigerator.report_id %}"><span class="status--pending">На рассмотрении</span></a>
-                        </td>
-                      {% endif %}
-                    {% else %}
-                      <td>Отчет отсутствует</td>
-                    {% endif %}
-                    <td>
-                      <div class="table-data-feature">
-                        <a href="{% url 'create_report_with_refrigerator' refrigerator_id=refrigerator.id %}">
-                          <button class="item" data-toggle="tooltip" data-placement="top" title="Добавить отчет">
-                            <i class="zmdi zmdi-camera-add"></i>
-                          </button>
-                        </a>
-                        <button class="item" data-toggle="tooltip" data-placement="top" title="Удалить холодильник">
-                          <i class="zmdi zmdi-delete"></i></button>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="spacer"></tr>
-                {% endfor %}
-                </tbody>
-      
+                <tr class="spacer"></tr>
+              {% endfor %}
+              </tbody>
+
             </table>
           </div>
           <div class="d-flex justify-content-center mt-3">

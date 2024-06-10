@@ -14,6 +14,20 @@ def index(request):
     current_user = request.user
     employee_refrigerators = Refrigerator.objects.filter(is_assigned=current_user).prefetch_related('reports')
 
+    search_query = request.GET.get('q')
+
+    if search_query:
+        employee_refrigerators = employee_refrigerators.filter(
+            Q(organization__name__icontains=search_query) |
+            Q(organization__name__startswith=search_query.capitalize()) |
+            Q(organization__name__istartswith=search_query.upper()) |
+            Q(organization__name__istartswith=search_query.lower()) |
+            Q(organization__address__icontains=search_query) |
+            Q(organization__address__startswith=search_query.capitalize()) |
+            Q(organization__address__istartswith=search_query.upper()) |
+            Q(organization__address__istartswith=search_query.lower())
+        )
+
     refrigerators = [{
         'id': refrigerator.pk,
         'serial': refrigerator.serial_number,
@@ -42,6 +56,7 @@ def index(request):
             'page': page,
             'statistic': employee_statistics,
             'user': user,
+            'search_query': search_query
         })
 
 
