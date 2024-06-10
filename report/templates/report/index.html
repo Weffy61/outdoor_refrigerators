@@ -3,8 +3,17 @@
 
 {% block title %}Мои холодильники{% endblock %}
 
-  {% block statistic %}
-    {% if not search_query %}
+{% block location %}
+  <li class="list-inline-item seprate">
+    <span>/</span>
+  </li>
+  {% if search_query %}
+  <li class="list-inline-item">Поиск по организациям</li>
+  {% endif %}
+{% endblock %}
+
+{% block statistic %}
+  {% if not search_query %}
     <section class="welcome p-t-10">
       <div class="container">
         <div class="row mt-4">
@@ -37,8 +46,8 @@
         </div>
       </div>
     </section>
-    {% endif %}
-  {% endblock %}
+  {% endif %}
+{% endblock %}
 
 
 
