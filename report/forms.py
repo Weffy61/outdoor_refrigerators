@@ -13,6 +13,8 @@ class ReportForm(forms.ModelForm):
         user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
         self.fields['refrigerator'].queryset = Refrigerator.objects.filter(is_assigned=user)
+        self.fields['refrigerator'].label_from_instance = lambda \
+            obj: f"{obj.serial_number} ({obj.model}) - {obj.organization.name}, {obj.organization.address}"
         self.fields['comment'].required = False
         self.fields['comment'].label = 'Комментарий (необязательно)'
 
