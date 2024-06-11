@@ -23,6 +23,9 @@ class PhotoForm(forms.ModelForm):
     class Meta:
         model = Photo
         fields = ['image']
+        widgets = {
+            'image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+        }
 
 
 class ManagerReportForm(forms.Form):
