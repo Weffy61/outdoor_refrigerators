@@ -46,6 +46,7 @@
             <label for="{{ form.image.id_for_label }}" class="col-sm-2 col-form-label">{{ form.image.label }}</label>
             <div class="col-sm-10">
               {{ form.image }}
+              {{ form.image.errors }}
             </div>
           </div>
         {% endfor %}

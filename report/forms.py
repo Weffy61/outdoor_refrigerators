@@ -1,3 +1,4 @@
+from PIL import Image
 from django import forms
 from django.contrib.auth import get_user_model
 
@@ -24,8 +25,22 @@ class PhotoForm(forms.ModelForm):
         model = Photo
         fields = ['image']
         widgets = {
-            'image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'image': forms.ClearableFileInput(attrs={'accept': '*/*'}),
         }
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+
+        if not image:
+            raise forms.ValidationError("Это поле обязательно для заполнения.")
+
+        try:
+            img = Image.open(image)
+            img.verify()
+        except (IOError, SyntaxError):
+            raise forms.ValidationError("Загруженный файл не является допустимым изображением.")
+
+        return image
 
 
 class ManagerReportForm(forms.Form):
