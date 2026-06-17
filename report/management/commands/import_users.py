@@ -30,7 +30,8 @@ class Command(BaseCommand):
                 else:
                     name, address = partner, ''
 
-                organization, _ = Organization.objects.get_or_create(name=name, defaults={'address': address})
+                # organization, _ = Organization.objects.get_or_create(name=name, defaults={'address': address})
+                organization, _ = Organization.objects.get_or_create(name=name, address=address)
 
                 refrigerator, created = Refrigerator.objects.get_or_create(
                     serial_number=serial_number,
@@ -43,7 +44,7 @@ class Command(BaseCommand):
                     continue
                 else:
                     try:
-                        last_name, first_name = responsible.split()
+                        first_name, last_name = responsible.split()
                         first_name = first_name.strip()
                         last_name = last_name.strip()
                     except ValueError:
@@ -68,5 +69,8 @@ class Command(BaseCommand):
             except (TypeError, ValueError, AttributeError) as error:
                 print(f'Не импортирована строка {line}, потому что {error}')
                 continue
+            except Exception as error:
+                print(f'Не импортирована строка {line}, потому что {error}')
+
 
         self.stdout.write(self.style.SUCCESS('Данные успешно импортированы'))

@@ -165,6 +165,16 @@ class Photo(models.Model):
         upload_to=os.path.join('report_photos', datetime.today().strftime('%d.%m.%Y')),
         verbose_name='Фото отчета'
     )
+    latitude = models.DecimalField(
+        max_digits=9, decimal_places=6,
+        null=True, blank=True,
+        verbose_name='Широта'
+    )
+    longitude = models.DecimalField(
+        max_digits=9, decimal_places=6,
+        null=True, blank=True,
+        verbose_name='Долгота'
+    )
 
     class Meta:
         verbose_name = 'Фотография'

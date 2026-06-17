@@ -15,6 +15,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = env.str('SECRET_KEY', 'REPLACE_ME')
 DEBUG = env.bool('DEBUG', True)
+YANDEX_GEOCODER_API_KEY = env.str('YANDEX_GEOCODER_API_KEY', '')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1'])
 
@@ -34,7 +35,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'drf_spectacular',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Outdoor Refrigerators API',
+    'DESCRIPTION': 'API для управления учётом холодильного оборудования',
+    'VERSION': '1.0.0',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

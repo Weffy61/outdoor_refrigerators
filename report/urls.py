@@ -12,6 +12,7 @@ urlpatterns = [
     path('create_report/', views.create_report, name='create_report'),
     path('create_report/<int:refrigerator_id>/', views.create_report, name='create_report_with_refrigerator'),
     path('instruction/', views.get_upload_instruction, name='upload_instruction'),
+    path('map/', views.map_view, name='map'),
 ]
 
 

@@ -114,20 +114,47 @@ def check_exif(img_path):
     return report_test
 
 
+def extract_gps_coords(img_path):
+    try:
+        file_path, _ = get_file_path(img_path)
+        _, file_extension = get_file_naming(file_path)
+        if file_extension == '.heic':
+            file_path = convert_extension(file_path)
+        with open(file_path, 'rb') as img_file:
+            img = Image(img_file)
+        exif_params = img.get_all()
+        lat = round(convert_coords(*(exif_params['gps_latitude'])), 6) \
+            if exif_params.get('gps_latitude') else None
+        lng = round(convert_coords(*(exif_params['gps_longitude'])), 6) \
+            if exif_params.get('gps_longitude') else None
+        return lat, lng
+    except Exception:
+        return None, None
+
+
 def convert_coords(degrees, minutes, seconds):
     decimal_degrees = degrees + (minutes / 60.0) + (seconds / 3600.0)
     return decimal_degrees
 
 
 def get_place(latitude, longitude):
+    from django.conf import settings
+    api_key = getattr(settings, 'YANDEX_GEOCODER_API_KEY', None)
+    if not api_key:
+        return 'Яндекс API-ключ не настроен'
     try:
         payload = {
-            'latitude': latitude,
-            'longitude': longitude,
-            'localityLanguage': 'ru'
-
+            'geocode': f'{longitude},{latitude}',
+            'apikey': api_key,
+            'format': 'json',
+            'lang': 'ru_RU',
+            'results': 1,
         }
-        response = requests.get('https://api.bigdatacloud.net/data/reverse-geocode-client', params=payload, timeout=1)
+        response = requests.get(
+            'https://geocode-maps.yandex.ru/1.x/',
+            params=payload,
+            timeout=3,
+        )
         response.raise_for_status()
         return response.json()
     except (requests.exceptions.HTTPError, requests.exceptions.MissingSchema,
@@ -137,14 +164,39 @@ def get_place(latitude, longitude):
 
 
 def parse_location(place_response):
-    country = place_response.get('countryName', 'Страна отсутствует')
-    region = place_response.get('principalSubdivision', 'Регион отсутствует')
-    city = place_response.get('city', 'Город отсутствует')
-    area = place_response.get('locality', 'Район отсутствует')
-    place_content = textwrap.dedent(f'''
+    if isinstance(place_response, str):
+        return place_response
+
+    try:
+        members = (
+            place_response['response']['GeoObjectCollection']['featureMember']
+        )
+        if not members:
+            return 'Местоположение не определено\n'
+
+        components = (
+            members[0]['GeoObject']
+            ['metaDataProperty']['GeocoderMetaData']
+            ['Address']['Components']
+        )
+        kind_map = {c['kind']: c['name'] for c in components}
+
+        country = kind_map.get('country', 'Страна отсутствует')
+        region = kind_map.get('province', 'Регион отсутствует')
+        city = kind_map.get('locality', 'Город отсутствует')
+        area = kind_map.get('district', 'Район отсутствует')
+        street = kind_map.get('street', '')
+        house = kind_map.get('house', '')
+
+        address_line = f'{street}, {house}'.strip(', ') if street else ''
+
+        place_content = textwrap.dedent(f'''
     Страна: {country}
     Регион: {region}
     Город: {city}
     Район: {area}
+    {f"Адрес: {address_line}" if address_line else ""}
     ''')
-    return place_content
+        return place_content
+    except (KeyError, IndexError, TypeError):
+        return 'Не удалось разобрать ответ геокодера\n'

@@ -1,0 +1,22 @@
+#map {
+  height: 520px;
+  width: 100%;
+  border-radius: 6px;
+}
+
+.legend {
+  background: white;
+  padding: 10px 14px;
+  border-radius: 6px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .3);
+  line-height: 1.8;
+  font-size: 13px;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 6px;
+}

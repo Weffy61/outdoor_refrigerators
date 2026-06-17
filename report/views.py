@@ -5,8 +5,8 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 
 from report.forms import ReportForm, PhotoFormSet, ManagerReportForm
-from report.models import Refrigerator, Report
-from report.service import check_exif
+from report.models import Refrigerator, Report, Photo
+from report.service import check_exif, extract_gps_coords
 
 
 @login_required(login_url='login')
@@ -213,6 +213,10 @@ def get_report(request, report_id):
                             for img_num, photo in enumerate(photos)]
             report.exif_description = "\n\n\n\n".join(exif_reports)
             report.save()
+            for photo in photos:
+                lat, lng = extract_gps_coords(request.build_absolute_uri(photo.image.url))
+                if lat is not None and lng is not None:
+                    Photo.objects.filter(pk=photo.pk).update(latitude=lat, longitude=lng)
 
     if report.sender != current_user and report.sender.manager != current_user:
         raise PermissionDenied
@@ -309,3 +313,9 @@ def create_report(request, refrigerator_id=None):
 def get_upload_instruction(request):
     user = get_current_user(request)
     return render(request, 'report/report_photo_instruction.html', {'user': user})
+
+
+@login_required(login_url='login')
+def map_view(request):
+    user = get_current_user(request)
+    return render(request, 'report/map.html', {'user': user})
