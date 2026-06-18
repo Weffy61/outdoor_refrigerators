@@ -319,3 +319,28 @@ def get_upload_instruction(request):
 def map_view(request):
     user = get_current_user(request)
     return render(request, 'report/map.html', {'user': user})
+
+
+@login_required(login_url='login')
+def cluster_map_view(request):
+    from report.clustering import cluster_organizations, build_cluster_map
+
+    eps_km = float(request.GET.get('eps', 1.0))
+    min_samples = int(request.GET.get('min_samples', 2))
+
+    orgs = cluster_organizations(eps_km=eps_km, min_samples=min_samples)
+    map_html = build_cluster_map(orgs)
+
+    n_clusters = len(set(o['cluster'] for o in orgs if o['cluster'] != -1))
+    n_noise = sum(1 for o in orgs if o['cluster'] == -1)
+
+    user = get_current_user(request)
+    return render(request, 'report/cluster_map.html', {
+        'map_html': map_html,
+        'orgs': orgs,
+        'eps': eps_km,
+        'min_samples': min_samples,
+        'n_clusters': n_clusters,
+        'n_noise': n_noise,
+        'user': user,
+    })
