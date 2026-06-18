@@ -1,9 +1,9 @@
 import numpy as np
 import folium
-from django.db.models import Avg
+from django.db.models import Avg, F
 from sklearn.cluster import DBSCAN
 
-from report.models import Organization, Photo
+from report.models import Photo
 
 CLUSTER_COLORS = [
     'red', 'blue', 'green', 'purple',
@@ -13,22 +13,21 @@ CLUSTER_COLORS = [
 
 
 def get_org_coordinates():
-    result = []
-    for org in Organization.objects.all():
-        agg = Photo.objects.filter(
-            report__refrigerator__organization=org,
-            latitude__isnull=False,
-            longitude__isnull=False,
-        ).aggregate(avg_lat=Avg('latitude'), avg_lon=Avg('longitude'))
-
-        if agg['avg_lat'] is not None:
-            result.append({
-                'id': org.id,
-                'name': org.name,
-                'lat': float(agg['avg_lat']),
-                'lon': float(agg['avg_lon']),
-            })
-    return result
+    rows = (
+        Photo.objects
+        .filter(latitude__isnull=False, longitude__isnull=False)
+        .annotate(
+            org_id=F('report__refrigerator__organization__id'),
+            org_name=F('report__refrigerator__organization__name'),
+        )
+        .values('org_id', 'org_name')
+        .annotate(avg_lat=Avg('latitude'), avg_lon=Avg('longitude'))
+    )
+    return [
+        {'id': r['org_id'], 'name': r['org_name'],
+         'lat': float(r['avg_lat']), 'lon': float(r['avg_lon'])}
+        for r in rows
+    ]
 
 
 def prepare_coords(orgs):
