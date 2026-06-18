@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Кластеризация арендаторов{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'report/css/cluster_map.css' %}">
+{% endblock %}
+
+{% block location %}
+  <li class="list-inline-item seprate"><span>/</span></li>
+  <li class="list-inline-item">Кластеризация арендаторов</li>
+{% endblock %}
+
+{% block context %}
+<section class="p-t-20">
+  <div class="container">
+
+    <div class="row mb-3">
+      <div class="col-md-12 d-flex justify-content-between align-items-center">
+        <h3 class="title-5 m-b-0">Кластеризация по географическому расположению (DBSCAN)</h3>
+        <a href="{% url 'map' %}">
+          <button class="au-btn au-btn--small au-btn-icon au-btn--green">
+            <i class="zmdi zmdi-arrow-left"></i> Назад к карте
+          </button>
+        </a>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <form method="get" class="params-form form-inline">
+          <label class="mr-2">Радиус (км):</label>
+          <input type="number" name="eps" value="{{ eps }}" step="0.1" min="0.1"
+                 class="form-control mr-3">
+          <label class="mr-2">Min. точек:</label>
+          <input type="number" name="min_samples" value="{{ min_samples }}" min="2"
+                 class="form-control mr-3">
+          <button type="submit" class="au-btn au-btn--small au-btn--green">
+            Пересчитать
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="row mb-2">
+      <div class="col-md-12">
+        <span class="text-muted" style="font-size:13px;">
+          Кластеров найдено: <strong>{{ n_clusters }}</strong> &nbsp;|&nbsp;
+          Шумовых точек: <strong>{{ n_noise }}</strong> &nbsp;|&nbsp;
+          Организаций с координатами: <strong>{{ orgs|length }}</strong>
+        </span>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-12">
+        {% if map_html %}
+          <div class="cluster-map-wrapper">
+            {{ map_html|safe }}
+          </div>
+        {% else %}
+          <div class="alert alert-warning">
+            Нет данных для кластеризации. Убедитесь, что у фотоотчётов есть GPS-координаты.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if orgs %}
+    <div class="row">
+      <div class="col-md-12">
+        <h5 class="title-5">Результаты по организациям</h5>
+        <div class="table-responsive table-responsive-data2">
+          <table class="table table-data2">
+            <thead>
+              <tr>
+                <th>Организация</th>
+                <th>Широта</th>
+                <th>Долгота</th>
+                <th>Кластер</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for org in orgs %}
+              <tr>
+                <td>{{ org.name }}</td>
+                <td>{{ org.lat }}</td>
+                <td>{{ org.lon }}</td>
+                <td>
+                  {% if org.cluster == -1 %}
+                    <span class="text-muted">шум</span>
+                  {% else %}
+                    <span>{{ org.cluster }}</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}
