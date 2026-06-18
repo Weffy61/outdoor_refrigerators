@@ -18,6 +18,7 @@ DEBUG = env.bool('DEBUG', True)
 YANDEX_GEOCODER_API_KEY = env.str('YANDEX_GEOCODER_API_KEY', '')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1'])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', [])
 
 
 AUTH_USER_MODEL = 'users.CustomUser'
