@@ -4,6 +4,7 @@
 {% block title %}Кластеризация арендаторов{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="{% static 'report/css/cluster_map.css' %}">
 {% endblock %}
 
@@ -55,9 +56,9 @@
 
     <div class="row mb-4">
       <div class="col-md-12">
-        {% if map_html %}
+        {% if orgs %}
           <div class="cluster-map-wrapper">
-            {{ map_html|safe }}
+            <div id="cluster-map" style="width:100%;height:100%;"></div>
           </div>
         {% else %}
           <div class="alert alert-warning">
@@ -105,4 +106,12 @@
 
   </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+{% if orgs %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>const CLUSTER_ORGS = {{ orgs_json|safe }};</script>
+<script src="{% static 'report/js/cluster_map.js' %}"></script>
+{% endif %}
 {% endblock %}
